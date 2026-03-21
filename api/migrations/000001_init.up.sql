@@ -4,6 +4,6 @@ CREATE TABLE USERS (
   nickname VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
-  createdAt BIGINT NOT NULL,
-  updatedAt BIGINT
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP
 );
