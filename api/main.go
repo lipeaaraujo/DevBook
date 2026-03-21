@@ -1,14 +1,22 @@
 package main
 
 import (
+	"api/config"
 	"api/src/router"
 	"fmt"
+	"log"
 	"net/http"
 )
 
 func main()  {
-	fmt.Println("Running API on port 4000")
+	config.Load()
+
+	fmt.Println("Running API on port", config.Port)
 	r := router.Generate()
 
-	http.ListenAndServe(":4000", r)
+	portStr := fmt.Sprintf(":%d", config.Port)
+	err := http.ListenAndServe(portStr, r)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
