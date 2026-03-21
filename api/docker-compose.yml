@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_HOST: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "12345"
+      POSTGRES_DB: "devbook"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d devbook"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devbook-db-network
+    volumes:
+      - devbook-db:/var/lib/postgresql/devbook-data
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    networks:
+      - devbook-db-network
+    ports:
+      - "5050:80"
+
+networks:
+  devbook-db-network:
+    name: devbook-db-network
+volumes:
+  devbook-db:
