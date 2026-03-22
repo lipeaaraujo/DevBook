@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"strings"
+	"time"
+)
 
 type User struct {
 	ID string `json:"id,omitempty"`
@@ -9,4 +13,38 @@ type User struct {
 	Email string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
+}
+
+func (user *User) Prepare() error {
+	user.format()
+	if err := user.validate(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (user *User) validate() error {
+	if user.Name == "" {
+		return errors.New("User name can't be null or empty")
+	}
+
+	if user.Nickname == "" {
+		return errors.New("User nickname can't be null or empty")
+	}
+
+	if user.Email == "" {
+		return errors.New("User email can't be null or empty")
+	}
+
+	if user.Password == "" {
+		return errors.New("User password can't be null or empty")
+	}
+
+	return nil
+}
+
+func (user *User) format() {
+	user.Name = strings.TrimSpace(user.Name)
+	user.Email = strings.TrimSpace(user.Email)
+	user.Nickname = strings.TrimSpace(user.Nickname)
 }
