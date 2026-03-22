@@ -34,7 +34,4 @@ func Load() {
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_DB"),
 	)
-	if err != nil {
-		DbConnectionString = ""
-	}
 }
