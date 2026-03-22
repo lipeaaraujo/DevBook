@@ -5,7 +5,7 @@ info:
 
 http:
   method: PUT
-  url: "{{API_URL}}/users/ed9b8039-7301-4bdf-9803-2face467d694"
+  url: "{{API_URL}}/users/a4fa5b94-0d5e-4bbd-aa65-f69226519b83"
   body:
     type: json
     data: |-

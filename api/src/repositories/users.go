@@ -37,7 +37,7 @@ func (repo users) Get(nameQuery string) ([]models.User, error) {
 	nameQuery = fmt.Sprintf("%%%s%%", nameQuery)
 
 	rows, err := repo.db.Query(
-		"select id, name, nickname, email, created_at from users where name ILIKE $1 or nickname ILIKE $2",
+		"select id, name, nickname, email, created_at, updated_at from users where name ILIKE $1 or nickname ILIKE $2",
 		nameQuery, nameQuery,
 	)
 
@@ -57,6 +57,7 @@ func (repo users) Get(nameQuery string) ([]models.User, error) {
 			&user.Nickname,
 			&user.Email,
 			&user.CreatedAt,
+			&user.UpdatedAt,
 		)
 
 		if err != nil {

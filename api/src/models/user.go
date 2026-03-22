@@ -15,8 +15,8 @@ type User struct {
 	Nickname string `json:"nickname,omitempty"`
 	Email string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
 func (user *User) Prepare(isUpdating bool) error {
