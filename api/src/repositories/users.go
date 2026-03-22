@@ -71,7 +71,7 @@ func (repo users) Get(nameQuery string) ([]models.User, error) {
 
 func (repo users) GetById(userId string) (models.User, error) {
 	rows, err := repo.db.Query(
-		"select id, name, nickname, email, created_at, updated_at email from users where id = $1",
+		"select id, name, nickname, email, created_at, updated_at from users where id = $1",
 		userId,
 	)
 

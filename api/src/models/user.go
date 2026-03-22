@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/src/utils"
 	"errors"
 	"strings"
 	"time"
@@ -18,15 +19,17 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (user *User) Prepare(isUpdate bool) error {
-	user.format()
-	if err := user.validate(isUpdate); err != nil {
+func (user *User) Prepare(isUpdating bool) error {
+	if err := user.format(isUpdating); err != nil {
+		return err
+	}
+	if err := user.validate(isUpdating); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (user *User) validate(isUpdate bool) error {
+func (user *User) validate(isUpdating bool) error {
 	if user.Name == "" {
 		return errors.New("User name can't be null or empty")
 	}
@@ -43,15 +46,26 @@ func (user *User) validate(isUpdate bool) error {
 		return errors.New("Invalid email format")
 	}
 
-	if !isUpdate && user.Password == "" {
+	if !isUpdating && user.Password == "" {
 		return errors.New("User password can't be null or empty")
 	}
 
 	return nil
 }
 
-func (user *User) format() {
+func (user *User) format(isUpdating bool) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
 	user.Nickname = strings.TrimSpace(user.Nickname)
+
+	if (!isUpdating) {
+		hashPassword, err := utils.Hash(user.Password)
+		if err != nil {
+			return err
+		}	
+
+		user.Password = string(hashPassword)
+	}
+
+	return nil
 }
