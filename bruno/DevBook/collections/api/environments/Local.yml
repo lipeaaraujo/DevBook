@@ -1,0 +1,4 @@
+name: Local
+variables:
+  - name: API_URL
+    value: http://localhost:4000
