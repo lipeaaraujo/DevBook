@@ -13,17 +13,18 @@ type User struct {
 	Email string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (user *User) Prepare() error {
+func (user *User) Prepare(isUpdate bool) error {
 	user.format()
-	if err := user.validate(); err != nil {
+	if err := user.validate(isUpdate); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (user *User) validate() error {
+func (user *User) validate(isUpdate bool) error {
 	if user.Name == "" {
 		return errors.New("User name can't be null or empty")
 	}
@@ -36,7 +37,7 @@ func (user *User) validate() error {
 		return errors.New("User email can't be null or empty")
 	}
 
-	if user.Password == "" {
+	if !isUpdate && user.Password == "" {
 		return errors.New("User password can't be null or empty")
 	}
 

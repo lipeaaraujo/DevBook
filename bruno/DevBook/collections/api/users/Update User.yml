@@ -5,7 +5,15 @@ info:
 
 http:
   method: PUT
-  url: "{{API_URL}}/users/1"
+  url: "{{API_URL}}/users/ed9b8039-7301-4bdf-9803-2face467d694"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "usuario editado",
+        "nickname": "usuario_editado",
+        "email": "testeeditado@teste.com"
+      }
   auth: inherit
 
 settings:
