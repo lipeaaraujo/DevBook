@@ -101,6 +101,32 @@ func (repo users) GetById(userId string) (models.User, error) {
 	return user, nil
 }
 
+func (repo users) GetByEmail(email string) (models.User, error) {
+	rows, err := repo.db.Query(
+		"select id, password from users where email = $1",
+		email,
+	)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return models.User{}, err
+	}
+
+	var user models.User
+	err = rows.Scan(
+		&user.ID,
+		&user.Password,
+	)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
 func (repo users) UpdateUser(userId string, user models.User) (error) {
 	statement, err := repo.db.Prepare(
 		"update users set name = $1, nickname = $2, email = $3, updated_at = $4 where id = $5",

@@ -53,6 +53,20 @@ func (user *User) validate(isUpdating bool) error {
 	return nil
 }
 
+func (user *User) PrepareLogin() error {
+	user.Email = strings.TrimSpace(user.Email)
+
+	if user.Email == "" {
+		return errors.New("User email is required")
+	}
+
+	if user.Password == "" {
+		return errors.New("User password is required")
+	}
+
+	return nil
+}
+
 func (user *User) format(isUpdating bool) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
