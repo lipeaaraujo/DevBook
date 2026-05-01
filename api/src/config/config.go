@@ -12,6 +12,7 @@ import (
 var (
 	DbConnectionString = ""
 	Port = 0
+	JwtTokenSecret = ""
 )
 
 func Load() {
@@ -34,4 +35,6 @@ func Load() {
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_DB"),
 	)
+
+	JwtTokenSecret = os.Getenv("JWT_TOKEN_SECRET")
 }

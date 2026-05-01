@@ -6,6 +6,7 @@ import (
 	"api/src/repositories"
 	"api/src/responses"
 	"api/src/utils"
+	"api/src/utils/auth"
 	"encoding/json"
 	"errors"
 	"io"
@@ -51,5 +52,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, nil)
+	token, err := auth.CreateToken(user.ID)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, token)
 }
