@@ -4,7 +4,8 @@ import (
 	"api/src/config"
 	"errors"
 	"fmt"
-	"log"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -21,18 +22,27 @@ func CreateToken(userId string) (string, error) {
 	return token.SignedString([]byte(config.JwtTokenSecret))
 }
 
-func ValidateToken(tokenString string) error {
+func ValidateToken(r *http.Request) (*jwt.Token, error) {
+	tokenString := extractToken(r)
 	token, err := jwt.Parse(tokenString, returnSecretKey)
-	log.Println(config.JwtTokenSecret)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return nil
+		return token, nil
 	}
 
-	return errors.New("Invalid token")
+	return nil, errors.New("Invalid token")
+}
+
+func extractToken(r *http.Request) string {
+	authHeader := r.Header.Get("Authorization")
+	token := ""
+	if len(strings.Split(authHeader, " ")) == 2 {
+		token = strings.Split(authHeader, " ")[1]
+	}
+	return token
 }
 
 func returnSecretKey(token *jwt.Token) (any, error) {
@@ -40,4 +50,20 @@ func returnSecretKey(token *jwt.Token) (any, error) {
 		return nil, fmt.Errorf("Unexpected token signing method: %v", token.Header["alg"])
 	}
 	return []byte(config.JwtTokenSecret), nil
+}
+
+func ExtractUserId(r *http.Request) (string, error) {
+	token, err := ValidateToken(r)
+	if err != nil {
+		return "", errors.New("Invalid token")
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		userId, ok := claims["userId"].(string)
+		if ok {
+			return userId, nil
+		}
+	}
+
+	return "", errors.New("Invalid token")
 }

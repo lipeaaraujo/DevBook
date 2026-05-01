@@ -5,11 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{API_URL}}/users?user=t"
-  params:
-    - name: user
-      value: t
-      type: query
+  url: "{{API_URL}}/users"
   auth:
     type: bearer
     token: "{{AccessToken}}"

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"strings"
 )
 
 func Logger(next http.HandlerFunc) http.HandlerFunc {
@@ -18,12 +17,7 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 
 func Auth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		token := ""
-		if len(strings.Split(authHeader, " ")) == 2 {
-			token = strings.Split(authHeader, " ")[1]
-		}
-		if err := auth.ValidateToken(token); err != nil {
+		if _, err := auth.ValidateToken(r); err != nil {
 			responses.Error(w, http.StatusUnauthorized, errors.New("Invalid token"))
 			return
 		}

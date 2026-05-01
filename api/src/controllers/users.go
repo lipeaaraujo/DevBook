@@ -5,6 +5,7 @@ import (
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
+	"api/src/utils/auth"
 	"encoding/json"
 	"errors"
 	"io"
@@ -100,6 +101,17 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userId := params["userId"]
 
+	autenticatedUserId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userId != autenticatedUserId {
+		responses.Error(w, http.StatusForbidden, errors.New("Can't edit a different user from yours"))
+		return
+	}
+
 	requestBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.Error(w, http.StatusUnprocessableEntity, err)
@@ -111,7 +123,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Error(w, http.StatusBadRequest, err)
 		return
 	}
-	
+
 	if err := user.Prepare(true); err != nil {
 		responses.Error(w, http.StatusBadRequest, err)
 		return
@@ -137,6 +149,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userId := params["userId"]
 
+	autenticatedUserId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userId != autenticatedUserId {
+		responses.Error(w, http.StatusForbidden, errors.New("Can't delete a different user from yours"))
+		return
+	}
+
 	db, err := db.Connect()
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
@@ -152,4 +175,3 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusNoContent, nil)
 }
-
