@@ -52,11 +52,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.CreateToken(user.ID)
+	token, err := auth.CreateToken(existingUser.ID)
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, token)
+	responses.JSON(w, http.StatusOK, map[string]string{
+		"token": token,
+	})
 }

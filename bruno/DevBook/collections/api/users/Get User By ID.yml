@@ -5,8 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{API_URL}}/users/a4fa5b94-0d5e-4bbd-aa65-f69226519b83"
-  auth: inherit
+  url: "{{API_URL}}/users/cd0d6b36-b9ab-4b6b-abb8-18f23d8b5626"
+  auth:
+    type: bearer
+    token: "{{AccessToken}}"
 
 settings:
   encodeUrl: true

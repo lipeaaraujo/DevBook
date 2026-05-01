@@ -10,7 +10,9 @@ http:
     - name: user
       value: t
       type: query
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{AccessToken}}"
 
 settings:
   encodeUrl: true

@@ -14,7 +14,9 @@ http:
         "nickname": "usuario_editado",
         "email": "testeeditado@teste.com"
       }
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{AccessToken}}"
 
 settings:
   encodeUrl: true
