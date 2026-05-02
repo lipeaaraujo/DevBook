@@ -76,7 +76,7 @@ func (user *User) format(isUpdating bool) error {
 	user.Email = strings.TrimSpace(user.Email)
 	user.Nickname = strings.TrimSpace(user.Nickname)
 
-	if (!isUpdating) {
+	if (!isUpdating && user.Password != "") {
 		hashPassword, err := utils.Hash(user.Password)
 		if err != nil {
 			return err
