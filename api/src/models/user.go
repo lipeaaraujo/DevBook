@@ -60,6 +60,10 @@ func (user *User) PrepareLogin() error {
 		return errors.New("User email is required")
 	}
 
+	if err := checkmail.ValidateFormat(user.Email); err != nil {
+		return errors.New("Invalid email format")
+	}
+
 	if user.Password == "" {
 		return errors.New("User password is required")
 	}
@@ -76,7 +80,7 @@ func (user *User) format(isUpdating bool) error {
 		hashPassword, err := utils.Hash(user.Password)
 		if err != nil {
 			return err
-		}	
+		}
 
 		user.Password = string(hashPassword)
 	}
