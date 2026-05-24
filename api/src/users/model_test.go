@@ -1,15 +1,15 @@
-package models_test
+package users_test
 
 import (
-	"api/src/models"
+	"api/src/users"
 	"fmt"
 	"testing"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func createDefaultUser() models.User {
-	return models.User{
+func createDefaultUser() users.User {
+	return users.User{
 		Name: "test",
 		Nickname: "test_test",
 		Email: "tt@tt.com",
@@ -97,7 +97,7 @@ func TestPrepare(t *testing.T) {
 				"email: %s, name: %s, nickname: %s, password: %s",
 				tt.email, tt.name, tt.nickname, tt.password,
 			), func(t *testing.T) {
-				user := models.User{
+				user := users.User{
 					Email: tt.email,
 					Name: tt.name,
 					Nickname: tt.nickname,
@@ -137,7 +137,7 @@ func TestPrepareLogin(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			user := models.User{Email: tt.email, Password: tt.password}
+			user := users.User{Email: tt.email, Password: tt.password}
 
 			err := user.PrepareLogin()
 			if tt.error {

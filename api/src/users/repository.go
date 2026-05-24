@@ -1,21 +1,29 @@
-package repositories
+package users
 
 import (
-	"api/src/models"
 	"database/sql"
 	"fmt"
 	"time"
 )
 
-type users struct {
+type UserRepoInterface interface {
+	Create(user *User) (string, error)
+	Get(nameQuery string) ([]User, error)
+	GetById(userId string) (User, error)
+	GetByEmail(email string) (User, error)
+	Update(userId string, user *User) (error)
+	Delete(userId string) (error)
+}
+
+type UserRepository struct {
 	db *sql.DB
 }
 
-func NewUserRepo(db *sql.DB) *users {
-	return &users{db}
+func NewUserRepo(db *sql.DB) *UserRepository {
+	return &UserRepository{db: db}
 }
 
-func (repo users) Create(user models.User) (string, error) {
+func (repo UserRepository) Create(user *User) (string, error) {
 	statement, err := repo.db.Prepare(
 		"insert into users (name, nickname, email, password) values($1, $2, $3, $4) returning id",
 	)
@@ -33,7 +41,7 @@ func (repo users) Create(user models.User) (string, error) {
 	return insertedId, nil
 }
 
-func (repo users) Get(nameQuery string) ([]models.User, error) {
+func (repo UserRepository) Get(nameQuery string) ([]User, error) {
 	nameQuery = fmt.Sprintf("%%%s%%", nameQuery)
 
 	rows, err := repo.db.Query(
@@ -47,9 +55,9 @@ func (repo users) Get(nameQuery string) ([]models.User, error) {
 
 	defer rows.Close()
 
-	var users []models.User
+	var users []User
 	for rows.Next() {
-		var user models.User
+		var user User
 
 		err := rows.Scan(
 			&user.ID,
@@ -70,22 +78,22 @@ func (repo users) Get(nameQuery string) ([]models.User, error) {
 	return users, nil
 }
 
-func (repo users) GetById(userId string) (models.User, error) {
+func (repo UserRepository) GetById(userId string) (User, error) {
 	rows, err := repo.db.Query(
 		"select id, name, nickname, email, created_at, updated_at from users where id = $1",
 		userId,
 	)
 
 	if err != nil {
-		return models.User{}, err
+		return User{}, err
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
-		return models.User{}, nil
+		return User{}, nil
 	}
 
-	var user models.User
+	var user User
 	err = rows.Scan(
 		&user.ID,
 		&user.Name,
@@ -95,39 +103,39 @@ func (repo users) GetById(userId string) (models.User, error) {
 		&user.UpdatedAt,
 	)
 	if err != nil {
-		return models.User{}, err
+		return User{}, err
 	}
 
 	return user, nil
 }
 
-func (repo users) GetByEmail(email string) (models.User, error) {
+func (repo UserRepository) GetByEmail(email string) (User, error) {
 	rows, err := repo.db.Query(
 		"select id, password from users where email = $1",
 		email,
 	)
 	if err != nil {
-		return models.User{}, err
+		return User{}, err
 	}
 	defer rows.Close()
 
 	if !rows.Next() {
-		return models.User{}, err
+		return User{}, err
 	}
 
-	var user models.User
+	var user User
 	err = rows.Scan(
 		&user.ID,
 		&user.Password,
 	)
 	if err != nil {
-		return models.User{}, err
+		return User{}, err
 	}
 
 	return user, nil
 }
 
-func (repo users) UpdateUser(userId string, user models.User) (error) {
+func (repo UserRepository) Update(userId string, user *User) (error) {
 	statement, err := repo.db.Prepare(
 		"update users set name = $1, nickname = $2, email = $3, updated_at = $4 where id = $5",
 	)
@@ -146,7 +154,7 @@ func (repo users) UpdateUser(userId string, user models.User) (error) {
 	return nil
 }
 
-func (repo users) Delete(userId string) error {
+func (repo UserRepository) Delete(userId string) error {
 	statement, err := repo.db.Prepare("delete from users where id = $1")
 	if err != nil {
 		return err

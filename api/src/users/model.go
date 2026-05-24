@@ -1,8 +1,8 @@
-package models
+package users
 
 import (
+	"api/src/apierrors"
 	"api/src/utils"
-	"errors"
 	"strings"
 	"time"
 
@@ -31,23 +31,23 @@ func (user *User) Prepare(isUpdating bool) error {
 
 func (user *User) validate(isUpdating bool) error {
 	if user.Name == "" {
-		return errors.New("User name can't be null or empty")
+		return apierrors.ValidationError("User name can't be null or empty")
 	}
 
 	if user.Nickname == "" {
-		return errors.New("User nickname can't be null or empty")
+		return apierrors.ValidationError("User nickname can't be null or empty")
 	}
 
 	if user.Email == "" {
-		return errors.New("User email can't be null or empty")
+		return apierrors.ValidationError("User email can't be null or empty")
 	}
 
 	if err := checkmail.ValidateFormat(user.Email); err != nil {
-		return errors.New("Invalid email format")
+		return apierrors.ValidationError("Invalid email format")
 	}
 
 	if !isUpdating && user.Password == "" {
-		return errors.New("User password can't be null or empty")
+		return apierrors.ValidationError("User password can't be null or empty")
 	}
 
 	return nil
@@ -57,15 +57,15 @@ func (user *User) PrepareLogin() error {
 	user.Email = strings.TrimSpace(user.Email)
 
 	if user.Email == "" {
-		return errors.New("User email is required")
+		return apierrors.ValidationError("User email is required")
 	}
 
 	if err := checkmail.ValidateFormat(user.Email); err != nil {
-		return errors.New("Invalid email format")
+		return apierrors.ValidationError("Invalid email format")
 	}
 
 	if user.Password == "" {
-		return errors.New("User password is required")
+		return apierrors.ValidationError("User password is required")
 	}
 
 	return nil
@@ -79,7 +79,7 @@ func (user *User) format(isUpdating bool) error {
 	if (!isUpdating && user.Password != "") {
 		hashPassword, err := utils.Hash(user.Password)
 		if err != nil {
-			return err
+			return apierrors.Internal(err)
 		}
 
 		user.Password = string(hashPassword)

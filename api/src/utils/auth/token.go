@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"api/src/apierrors"
 	"api/src/config"
 	"errors"
 	"fmt"
@@ -55,7 +56,7 @@ func returnSecretKey(token *jwt.Token) (any, error) {
 func ExtractUserId(r *http.Request) (string, error) {
 	token, err := ValidateToken(r)
 	if err != nil {
-		return "", errors.New("Invalid token")
+		return "", apierrors.Unauthorized("Invalid token")
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
@@ -65,5 +66,5 @@ func ExtractUserId(r *http.Request) (string, error) {
 		}
 	}
 
-	return "", errors.New("Invalid token")
+	return "", apierrors.Unauthorized("Invalid token")
 }
