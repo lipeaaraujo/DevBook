@@ -23,3 +23,21 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  # Update User
+
+  Updates an existing user identified by their UUID in the URL path.
+
+  **Auth required:** Yes (Bearer token)
+
+  A user can only update their own record. The password is not required
+  when updating.
+
+  ## Request body
+
+  | Field    | Type   | Description       |
+  |----------|--------|-------------------|
+  | name     | string | Full name         |
+  | nickname | string | Display nickname  |
+  | email    | string | Valid email       |

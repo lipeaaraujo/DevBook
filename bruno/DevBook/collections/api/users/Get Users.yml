@@ -15,3 +15,13 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  # Get Users
+
+  Returns the list of registered users.
+
+  **Auth required:** Yes (Bearer token)
+
+  Run the **Login** request first so the `AccessToken` variable is set;
+  it is sent automatically as the Bearer token.

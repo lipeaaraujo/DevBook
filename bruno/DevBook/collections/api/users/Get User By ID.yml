@@ -15,3 +15,12 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  # Get User By ID
+
+  Returns a single user identified by their UUID in the URL path.
+
+  **Auth required:** Yes (Bearer token)
+
+  Replace the UUID in the URL with the id of an existing user.

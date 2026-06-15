@@ -20,6 +20,26 @@ runtime:
     - type: after-response
       code: bru.setVar("AccessToken", res.body.token)
 
+docs: |-
+  # Login
+
+  Authenticates a user with their email and password.
+
+  **Auth required:** No
+
+  ## Request body
+
+  | Field    | Type   | Description           |
+  |----------|--------|-----------------------|
+  | email    | string | Registered user email |
+  | password | string | User password         |
+
+  ## Response
+
+  Returns a JWT access token on success. The `after-response` script
+  automatically stores it in the `AccessToken` variable, which the
+  authenticated user requests reuse as a Bearer token.
+
 settings:
   encodeUrl: true
   timeout: 0

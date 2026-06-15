@@ -15,3 +15,12 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  # Delete User
+
+  Deletes an existing user identified by their UUID in the URL path.
+
+  **Auth required:** Yes (Bearer token)
+
+  A user can only delete their own record.
