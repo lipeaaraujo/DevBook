@@ -1,8 +1,10 @@
 package users
 
 import (
+	"api/src/apierrors"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -35,6 +37,9 @@ func (repo UserRepository) Create(user *User) (string, error) {
 	var insertedId string
 	err = statement.QueryRow(user.Name, user.Nickname, user.Email, user.Password).Scan(&insertedId)
 	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			err = apierrors.ResourceAlreadyExists("User with that email")
+		}
 		return "", err
 	}
 

@@ -49,3 +49,7 @@ func Unauthorized(msg string) *APIError {
 func ValidationError(msg string) *APIError {
 	return New(http.StatusUnprocessableEntity, msg, nil)
 }
+
+func ResourceAlreadyExists(resource string) *APIError {
+	return New(http.StatusBadRequest, fmt.Sprintf("%s already exists", resource), nil)
+}
