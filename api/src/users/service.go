@@ -1,6 +1,9 @@
 package users
 
-import "api/src/apierrors"
+import (
+	"api/src/apierrors"
+	"net/http"
+)
 
 type UserService struct {
 	repo UserRepoInterface
@@ -61,5 +64,17 @@ func (service UserService) Delete(id string) error {
 	if err := service.repo.Delete(id); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (service UserService) Follow(userId, followId string) error {
+	if userId == followId {
+		return apierrors.New(http.StatusForbidden, "You can't follow your own user.", nil)
+	}
+
+	if err := service.repo.Follow(userId, followId); err != nil {
+		return err
+	}
+
 	return nil
 }

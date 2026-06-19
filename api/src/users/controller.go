@@ -139,3 +139,24 @@ func (controller UserController) DeleteUser(
 
 	responses.JSON(w, http.StatusNoContent, nil)
 }
+
+func (controller UserController) FollowUser(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	params := mux.Vars(r)
+	userToFollowId := params["userId"]
+
+	authenticatedUserId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	if err = controller.service.Follow(authenticatedUserId, userToFollowId); err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}

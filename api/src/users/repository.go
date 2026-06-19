@@ -15,6 +15,7 @@ type UserRepoInterface interface {
 	GetByEmail(email string) (User, error)
 	Update(userId string, user *User) (error)
 	Delete(userId string) (error)
+	Follow(userId, followId string) (error)
 }
 
 type UserRepository struct {
@@ -167,6 +168,22 @@ func (repo UserRepository) Delete(userId string) error {
 	defer statement.Close()
 
 	if _, err = statement.Exec(userId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo UserRepository) Follow(userId, followId string) error {
+	statement, err := repo.db.Prepare(
+		"insert into followers (follower_id, user_id) values ($1, $2)"
+	)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(userId, followId); err != nil {
 		return err
 	}
 

@@ -1,0 +1,26 @@
+info:
+  name: Follow User
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{API_URL}}/users/7a65689a-dc6b-41d4-b011-376cb3facd25/follow"
+  auth:
+    type: bearer
+    token: "{{AccessToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Delete User
+
+  Deletes an existing user identified by their UUID in the URL path.
+
+  **Auth required:** Yes (Bearer token)
+
+  A user can only delete their own record.

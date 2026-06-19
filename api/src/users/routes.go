@@ -37,5 +37,11 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			Handler: userController.DeleteUser,
 			RequiresAuth: true,
 		},
+		{
+			URI: "/users/{userId}/follow",
+			Method: http.MethodPost,
+			Handler: userController.FollowUser,
+			RequiresAuth: true,
+		},
 	}
 }
