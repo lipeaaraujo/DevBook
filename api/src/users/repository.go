@@ -4,6 +4,7 @@ import (
 	"api/src/apierrors"
 	"database/sql"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -176,7 +177,7 @@ func (repo UserRepository) Delete(userId string) error {
 
 func (repo UserRepository) Follow(userId, followId string) error {
 	statement, err := repo.db.Prepare(
-		"insert into followers (follower_id, user_id) values ($1, $2)"
+		"insert into followers (follower_id, user_id) values ($1, $2)",
 	)
 	if err != nil {
 		return err
@@ -184,6 +185,10 @@ func (repo UserRepository) Follow(userId, followId string) error {
 	defer statement.Close()
 
 	if _, err := statement.Exec(userId, followId); err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			err = apierrors.New(http.StatusBadRequest, "Already following user.", nil)
+			return err
+		}
 		return err
 	}
 
