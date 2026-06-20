@@ -43,5 +43,11 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			Handler: userController.FollowUser,
 			RequiresAuth: true,
 		},
+		{
+			URI: "/users/{userId}/unfollow",
+			Method: http.MethodPost,
+			Handler: userController.UnfollowUser,
+			RequiresAuth: true,
+		},
 	}
 }

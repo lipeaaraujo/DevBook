@@ -160,3 +160,24 @@ func (controller UserController) FollowUser(
 
 	responses.JSON(w, http.StatusNoContent, nil)
 }
+
+func (controller UserController) UnfollowUser(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	params := mux.Vars(r)
+	unfollowId := params["userId"]
+
+	authUserId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	if err := controller.service.Unfollow(authUserId, unfollowId); err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}

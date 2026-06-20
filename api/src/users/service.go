@@ -78,3 +78,15 @@ func (service UserService) Follow(userId, followId string) error {
 
 	return nil
 }
+
+func (service UserService) Unfollow(userId, followId string) error {
+	if userId == followId {
+		return apierrors.New(http.StatusForbidden, "You can't unfollow your own user.", nil)
+	}
+
+	if err := service.repo.Unfollow(userId, followId); err != nil {
+		return err
+	}
+
+	return nil
+}

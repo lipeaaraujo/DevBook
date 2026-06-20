@@ -17,6 +17,7 @@ type UserRepoInterface interface {
 	Update(userId string, user *User) (error)
 	Delete(userId string) (error)
 	Follow(userId, followId string) (error)
+	Unfollow(userId, unfollowId string) (error)
 }
 
 type UserRepository struct {
@@ -189,6 +190,22 @@ func (repo UserRepository) Follow(userId, followId string) error {
 			err = apierrors.New(http.StatusBadRequest, "Already following user.", nil)
 			return err
 		}
+		return err
+	}
+
+	return nil
+}
+
+func (repo UserRepository) Unfollow(userId, unfollowId string) error {
+	statement, err := repo.db.Prepare(
+		"delete from followers where follower_id = $1 and user_id = $2",
+	)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(userId, unfollowId); err != nil {
 		return err
 	}
 
