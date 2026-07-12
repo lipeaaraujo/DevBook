@@ -47,6 +47,7 @@ func (controller UserController) CreateUser(
 		return
 	}
 
+	createdUser.Password = ""
 	responses.JSON(w, http.StatusCreated, createdUser)
 }
 
