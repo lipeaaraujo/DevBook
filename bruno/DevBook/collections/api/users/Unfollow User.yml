@@ -1,11 +1,11 @@
 info:
-  name: Follow User
+  name: Unfollow User
   type: http
-  seq: 6
+  seq: 7
 
 http:
   method: POST
-  url: "{{API_URL}}/users/:id/follow"
+  url: "{{API_URL}}/users/:id/unfollow"
   params:
     - name: id
       value: ""
