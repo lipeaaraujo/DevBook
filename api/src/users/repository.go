@@ -18,6 +18,8 @@ type UserRepoInterface interface {
 	Delete(userId string) (error)
 	Follow(userId, followId string) (error)
 	Unfollow(userId, unfollowId string) (error)
+	GetPwd(userId string) (string, error)
+	UpdatePwd(userId, newPwd string) (error)
 }
 
 type UserRepository struct {
@@ -206,6 +208,44 @@ func (repo UserRepository) Unfollow(userId, unfollowId string) error {
 	defer statement.Close()
 
 	if _, err := statement.Exec(userId, unfollowId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo UserRepository) GetPwd(userId string) (string, error) {
+	rows, err := repo.db.Query(
+		"select password from users where id = $1",
+		userId,
+	)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	var password string
+	if !rows.Next() {
+		return "", apierrors.NotFound("User")
+	}
+
+	if err := rows.Scan(&password); err != nil {
+		return "", err
+	}
+
+	return password, nil
+}
+
+func (repo UserRepository) UpdatePwd(userId, hashedPassword string) error {
+	statement, err := repo.db.Prepare(
+		"update users set password = $1 where id = $2",
+	)
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(hashedPassword, userId); err != nil {
 		return err
 	}
 

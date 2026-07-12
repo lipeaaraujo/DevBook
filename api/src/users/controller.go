@@ -20,6 +20,11 @@ func NewUserController(s *UserService) *UserController {
 	return &UserController{s}
 }
 
+type changePasswordRequest struct {
+	CurrentPwd string `json:"currentPassword"`
+	NewPwd string `json:"newPassword"`
+}
+
 func (controller UserController) CreateUser(
 	w http.ResponseWriter,
  	r *http.Request,
@@ -175,6 +180,48 @@ func (controller UserController) UnfollowUser(
 	}
 
 	if err := controller.service.Unfollow(authUserId, unfollowId); err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}
+
+func (controller UserController) ChangePassword(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	params := mux.Vars(r)
+	userId := params["userId"]
+
+	authUserId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	if authUserId != userId {
+		responses.Error(w, apierrors.Forbidden("Can't change a different user's password"))
+		return
+	}
+
+	requestBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.Error(w, apierrors.ValidationError(err.Error()))
+		return
+	}
+
+	var fields changePasswordRequest
+	if err := json.Unmarshal(requestBody, &fields); err != nil {
+		responses.Error(w, apierrors.BadRequest(err.Error()))
+		return
+	}
+
+	if err = controller.service.ChangePassword(
+		userId,
+		fields.CurrentPwd,
+		fields.NewPwd,
+	); err != nil {
 		responses.Error(w, err)
 		return
 	}

@@ -49,5 +49,11 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			Handler: userController.UnfollowUser,
 			RequiresAuth: true,
 		},
+		{
+			URI: "/users/{userId}/change-password",
+			Method: http.MethodPost,
+			Handler: userController.ChangePassword,
+			RequiresAuth: true,
+		},
 	}
 }

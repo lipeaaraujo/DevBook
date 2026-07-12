@@ -2,6 +2,7 @@ package users
 
 import (
 	"api/src/apierrors"
+	"api/src/utils"
 	"net/http"
 )
 
@@ -85,6 +86,32 @@ func (service UserService) Unfollow(userId, followId string) error {
 	}
 
 	if err := service.repo.Unfollow(userId, followId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service UserService) ChangePassword(userId, currentPwd, newPwd string) error {
+	// check currentPwd
+	userPwd, err := service.repo.GetPwd(userId)
+	if err != nil {
+		return err
+	}
+
+	err = utils.VerifyHash(currentPwd, userPwd)
+	if err != nil {
+		return apierrors.Unauthorized("Invalid credentials")
+	}
+	
+	// hash newPwd
+	hash, err := utils.Hash(newPwd)
+	if err != nil {
+		return err
+	}
+	
+	// save newPwd
+	if err := service.repo.UpdatePwd(userId, string(hash)); err != nil {
 		return err
 	}
 
