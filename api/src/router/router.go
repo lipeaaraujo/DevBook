@@ -4,6 +4,7 @@ import (
 	"api/src/db"
 	"api/src/login"
 	"api/src/middlewares"
+	"api/src/posts"
 	"api/src/users"
 	"log"
 
@@ -25,8 +26,13 @@ func Generate() *mux.Router {
 	loginService := login.NewLoginService(userRepo)
 	loginController := login.NewLoginController(loginService)
 
+	postRepo := posts.NewPostRepo(db)
+	postService := posts.NewPostService(postRepo)
+	postController := posts.NewPostController(postService)
+
 	routes := users.CreateUserRoutes(userController)
 	routes = append(routes, login.CreateLoginRoutes(loginController)...)
+	routes = append(routes, posts.CreatePostRoutes(postController)...)
 
 	for _, route := range routes {
 		configuredHandler := route.Handler
