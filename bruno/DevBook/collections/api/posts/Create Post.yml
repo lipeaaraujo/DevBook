@@ -1,0 +1,41 @@
+info:
+  name: Create Post
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/post"
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Teste",
+        "description": "testenick"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Create User
+
+  Registers a new user. The password is hashed before being stored.
+
+  **Auth required:** No
+
+  ## Request body
+
+  | Field    | Type   | Description                  |
+  |----------|--------|------------------------------|
+  | name     | string | Full name                    |
+  | nickname | string | Display nickname             |
+  | email    | string | Unique, valid email address  |
+  | password | string | Plain-text password to hash  |
+
+  All fields are required and validated. The email must be unique and
+  in a valid format.
