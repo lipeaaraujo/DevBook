@@ -33,36 +33,6 @@ func (repo PostRepo) Create(post Post) (string, error) {
 	return insertedId, nil
 }
 
-func (repo PostRepo) Get() ([]Post, error) {
-	rows, err := repo.db.Query(
-		"select (id, title, description, author_id, created_at, updated_at) from posts",
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var posts []Post
-	for rows.Next() {
-		var post Post
-
-		if err := rows.Scan(
-			&post.Id,
-			&post.Title,
-			&post.Description,
-			&post.AuthorId,
-			&post.CreatedAt,
-			&post.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-
-		posts = append(posts, post)
-	}
-
-	return posts, nil
-}
-
 func (repo PostRepo) GetById(id string) (Post, error) {
 	rows, err := repo.db.Query(
 		"select (id, title, description, author_id, created_at, updated_at) from posts where id = $1",
@@ -92,7 +62,7 @@ func (repo PostRepo) GetById(id string) (Post, error) {
 	return Post{}, nil
 }
 
-func (repo PostRepo) GetByTitle(title string) ([]Post, error) {
+func (repo PostRepo) Get(title string) ([]Post, error) {
 	titleQuery := fmt.Sprintf("%%%s%%", title)
 
 	rows, err := repo.db.Query(

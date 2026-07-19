@@ -29,3 +29,15 @@ func (post *Post) PrepareCreate() error {
 
 	return nil
 }
+
+func (post *Post) PrepareUpdate() error {
+	if len(post.Title) > 50 {
+		return apierrors.BadRequest("Post title can't be bigger than 50 characters")
+	}
+
+	if len(post.Description) > 2000 {
+		return apierrors.BadRequest("Post description can't be bigger than 2000 characters")
+	}
+
+	return nil
+}
