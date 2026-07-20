@@ -1,18 +1,15 @@
 info:
-  name: Create Post
+  name: Get Posts By Id
   type: http
-  seq: 1
+  seq: 3
 
 http:
-  method: POST
-  url: "{{API_URL}}/post"
-  body:
-    type: json
-    data: |-
-      {
-        "title": "Teste",
-        "description": "testenick"
-      }
+  method: GET
+  url: "{{API_URL}}/post/:id"
+  params:
+    - name: id
+      value: 970b45ba-e898-4c72-82e4-f8dfbb9a1380
+      type: path
   auth:
     type: bearer
     token: "{{AccessToken}}"

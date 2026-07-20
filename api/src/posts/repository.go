@@ -35,7 +35,7 @@ func (repo PostRepo) Create(post Post) (string, error) {
 
 func (repo PostRepo) GetById(id string) (Post, error) {
 	rows, err := repo.db.Query(
-		"select (id, title, description, author_id, created_at, updated_at) from posts where id = $1",
+		"select id, title, description, author_id, created_at, updated_at from posts where id = $1",
 		id,
 	)
 	if err != nil {
@@ -59,14 +59,14 @@ func (repo PostRepo) GetById(id string) (Post, error) {
 		return Post{}, err
 	}
 
-	return Post{}, nil
+	return post, nil
 }
 
 func (repo PostRepo) Get(title string) ([]Post, error) {
 	titleQuery := fmt.Sprintf("%%%s%%", title)
 
 	rows, err := repo.db.Query(
-		"select (id, title, description, author_id, created_at, updated_at) from posts where title ILIKE $1",
+		"select id, title, description, author_id, created_at, updated_at from posts where title ILIKE $1",
 		titleQuery,
 	)
 	if err != nil {
@@ -98,7 +98,7 @@ func (repo PostRepo) Get(title string) ([]Post, error) {
 func (repo PostRepo) GetByAuthor(authorId string, title string) ([]Post, error) {
 	titleQuery := fmt.Sprintf("%%%s%%", title)
 	rows, err := repo.db.Query(
-		`select (id, title, description, author_id, created_at, updated_at) from posts
+		`select id, title, description, author_id, created_at, updated_at from posts
 			where author_id = $1
 			and title ILIKE $2`,
 		authorId,

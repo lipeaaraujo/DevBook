@@ -1,18 +1,16 @@
 info:
-  name: Create Post
+  name: Get Posts
   type: http
-  seq: 1
+  seq: 2
 
 http:
-  method: POST
+  method: GET
   url: "{{API_URL}}/post"
-  body:
-    type: json
-    data: |-
-      {
-        "title": "Teste",
-        "description": "testenick"
-      }
+  params:
+    - name: title
+      value: ""
+      type: query
+      disabled: true
   auth:
     type: bearer
     token: "{{AccessToken}}"

@@ -26,19 +26,19 @@ func CreatePostRoutes(controller *PostController) []routes.Route {
 			RequiresAuth: true,
 		},
 		{
-			URI: "/post/{authorId}",
+			URI: "/post/user/{authorId}",
 			Method: http.MethodGet,
 			Handler: controller.GetByAuthor,
 			RequiresAuth: true,
 		},
 		{
-			URI: "/post",
+			URI: "/post/{postId}",
 			Method: http.MethodPut,
 			Handler: controller.UpdatePost,
 			RequiresAuth: true,
 		},
 		{
-			URI: "/post",
+			URI: "/post/{postId}",
 			Method: http.MethodDelete,
 			Handler: controller.DeletePost,
 			RequiresAuth: true,

@@ -59,10 +59,6 @@ func (service PostService) GetByAuthor(authorId string, title string) ([]Post, e
 }
 
 func (service PostService) UpdatePost(post *Post) (error) {
-	if post.Title == "" && post.Description == "" {
-		return apierrors.BadRequest("You need to pass the title or Description")
-	}
-
 	if err := post.PrepareUpdate(); err != nil {
 		return err
 	}
@@ -75,7 +71,7 @@ func (service PostService) UpdatePost(post *Post) (error) {
 }
 
 func (service PostService) DeletePost(postId string) (error) {
-	if postId != "" {
+	if postId == "" {
 		return apierrors.BadRequest("You have to pass the postId")
 	}
 

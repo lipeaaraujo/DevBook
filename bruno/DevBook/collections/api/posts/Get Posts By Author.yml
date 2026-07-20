@@ -1,18 +1,19 @@
 info:
-  name: Create Post
+  name: Get Posts By Author
   type: http
-  seq: 1
+  seq: 4
 
 http:
-  method: POST
-  url: "{{API_URL}}/post"
-  body:
-    type: json
-    data: |-
-      {
-        "title": "Teste",
-        "description": "testenick"
-      }
+  method: GET
+  url: "{{API_URL}}/post/user/:authorId"
+  params:
+    - name: title
+      value: t
+      type: query
+      disabled: true
+    - name: authorId
+      value: ""
+      type: path
   auth:
     type: bearer
     token: "{{AccessToken}}"

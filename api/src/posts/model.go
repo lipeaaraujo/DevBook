@@ -11,7 +11,7 @@ type Post struct {
 	Description string `json:"description,omitempty"`
 	AuthorId string `json:"authorId,omitempty"`
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time `json:"updatedAt"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
 func (post *Post) PrepareCreate() error {
@@ -31,6 +31,10 @@ func (post *Post) PrepareCreate() error {
 }
 
 func (post *Post) PrepareUpdate() error {
+	if post.Title == "" || post.Description == "" {
+		return apierrors.BadRequest("Post title or description can't be empty")
+	}
+
 	if len(post.Title) > 50 {
 		return apierrors.BadRequest("Post title can't be bigger than 50 characters")
 	}
