@@ -7,7 +7,7 @@ import (
 	"api/src/utils/auth"
 )
 
-type LoginService struct{
+type LoginService struct {
 	userRepo users.UserRepoInterface
 }
 

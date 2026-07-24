@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func main()  {
+func main() {
 	config.Load()
 
 	fmt.Println("Running API on port", config.Port)

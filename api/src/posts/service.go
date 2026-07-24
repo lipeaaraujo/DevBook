@@ -2,7 +2,7 @@ package posts
 
 import "api/src/apierrors"
 
-type PostService struct{
+type PostService struct {
 	repo *PostRepo
 }
 
@@ -33,7 +33,7 @@ func (service PostService) GetPosts(title string) ([]Post, error) {
 }
 
 func (service PostService) GetById(postId string) (Post, error) {
-	if (postId == "") {
+	if postId == "" {
 		return Post{}, apierrors.BadRequest("You need to pass the postId")
 	}
 
@@ -46,7 +46,7 @@ func (service PostService) GetById(postId string) (Post, error) {
 }
 
 func (service PostService) GetByAuthor(authorId string, title string) ([]Post, error) {
-	if (authorId == "") {
+	if authorId == "" {
 		return nil, apierrors.BadRequest("You need to pass the authorId")
 	}
 
@@ -58,7 +58,7 @@ func (service PostService) GetByAuthor(authorId string, title string) ([]Post, e
 	return posts, err
 }
 
-func (service PostService) UpdatePost(post *Post) (error) {
+func (service PostService) UpdatePost(post *Post) error {
 	if err := post.PrepareUpdate(); err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (service PostService) UpdatePost(post *Post) (error) {
 	return nil
 }
 
-func (service PostService) DeletePost(postId string) (error) {
+func (service PostService) DeletePost(postId string) error {
 	if postId == "" {
 		return apierrors.BadRequest("You have to pass the postId")
 	}

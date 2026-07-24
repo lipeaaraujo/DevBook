@@ -25,7 +25,7 @@ func (controller PostController) CreatePost(w http.ResponseWriter, r *http.Reque
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.Error(w, apierrors.ValidationError(err.Error()))
-		return 
+		return
 	}
 
 	var post Post

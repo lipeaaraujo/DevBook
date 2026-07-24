@@ -26,12 +26,12 @@ func Error(w http.ResponseWriter, err error) {
 	var apiError *apierrors.APIError
 
 	switch {
-		case errors.As(err, &apiError):
-			JSON(w, apiError.Status, apiError)
-		default:
-			fmt.Println("unhandled error: ", err)
-			JSON(w, http.StatusInternalServerError, &apierrors.APIError{
-				Message: "Unexpected error",
-			})
+	case errors.As(err, &apiError):
+		JSON(w, apiError.Status, apiError)
+	default:
+		fmt.Println("unhandled error: ", err)
+		JSON(w, http.StatusInternalServerError, &apierrors.APIError{
+			Message: "Unexpected error",
+		})
 	}
 }

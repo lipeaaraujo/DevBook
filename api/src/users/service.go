@@ -103,13 +103,13 @@ func (service UserService) ChangePassword(userId, currentPwd, newPwd string) err
 	if err != nil {
 		return apierrors.Unauthorized("Invalid credentials")
 	}
-	
+
 	// hash newPwd
 	hash, err := utils.Hash(newPwd)
 	if err != nil {
 		return err
 	}
-	
+
 	// save newPwd
 	if err := service.repo.UpdatePwd(userId, string(hash)); err != nil {
 		return err

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type PostRepo struct{
+type PostRepo struct {
 	db *sql.DB
 }
 
@@ -130,7 +130,7 @@ func (repo PostRepo) GetByAuthor(authorId string, title string) ([]Post, error) 
 	return posts, nil
 }
 
-func (repo PostRepo) Update(post *Post) (error) {
+func (repo PostRepo) Update(post *Post) error {
 	statement, err := repo.db.Prepare(
 		`update posts set title = $1, description = $2, updated_at = $3 where id = $4`,
 	)
@@ -153,7 +153,7 @@ func (repo PostRepo) Update(post *Post) (error) {
 	return nil
 }
 
-func (repo PostRepo) Delete(postId string) (error) {
+func (repo PostRepo) Delete(postId string) error {
 	statement, err := repo.db.Prepare(`delete from posts where id = $1`)
 	if err != nil {
 		return err

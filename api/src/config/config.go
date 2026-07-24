@@ -11,8 +11,8 @@ import (
 
 var (
 	DbConnectionString = ""
-	Port = 0
-	JwtTokenSecret = ""
+	Port               = 0
+	JwtTokenSecret     = ""
 )
 
 func Load() {

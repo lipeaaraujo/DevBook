@@ -5,8 +5,8 @@ import (
 )
 
 type Route struct {
-	URI string
-	Method string
-	Handler func(http.ResponseWriter, *http.Request)
+	URI          string
+	Method       string
+	Handler      func(http.ResponseWriter, *http.Request)
 	RequiresAuth bool
 }

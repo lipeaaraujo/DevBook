@@ -10,11 +10,11 @@ import (
 )
 
 type User struct {
-	ID string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Nickname string `json:"nickname,omitempty"`
-	Email string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
+	ID        string     `json:"id,omitempty"`
+	Name      string     `json:"name,omitempty"`
+	Nickname  string     `json:"nickname,omitempty"`
+	Email     string     `json:"email,omitempty"`
+	Password  string     `json:"password,omitempty"`
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
@@ -76,7 +76,7 @@ func (user *User) format(isUpdating bool) error {
 	user.Email = strings.TrimSpace(user.Email)
 	user.Nickname = strings.TrimSpace(user.Nickname)
 
-	if (!isUpdating && user.Password != "") {
+	if !isUpdating && user.Password != "" {
 		hashPassword, err := utils.Hash(user.Password)
 		if err != nil {
 			return apierrors.Internal(err)

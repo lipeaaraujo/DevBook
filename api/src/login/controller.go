@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type LoginController struct{
+type LoginController struct {
 	service *LoginService
 }
 

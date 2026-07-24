@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+cd api
 echo "Running go vet..."
 go vet ./...
 echo "Running gofmt check..."

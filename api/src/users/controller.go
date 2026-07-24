@@ -22,12 +22,12 @@ func NewUserController(s *UserService) *UserController {
 
 type changePasswordRequest struct {
 	CurrentPwd string `json:"currentPassword"`
-	NewPwd string `json:"newPassword"`
+	NewPwd     string `json:"newPassword"`
 }
 
 func (controller UserController) CreateUser(
 	w http.ResponseWriter,
- 	r *http.Request,
+	r *http.Request,
 ) {
 	requestBody, err := io.ReadAll(r.Body)
 	if err != nil {

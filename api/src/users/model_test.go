@@ -10,21 +10,21 @@ import (
 
 func createDefaultUser() users.User {
 	return users.User{
-		Name: "test",
+		Name:     "test",
 		Nickname: "test_test",
-		Email: "tt@tt.com",
+		Email:    "tt@tt.com",
 		Password: "12345",
 	}
 }
 
 func TestPrepare(t *testing.T) {
 	t.Run("trim spaces from email, name and nickname", func(t *testing.T) {
-		tests := []struct{
-			email string
-			name string
-			nickname string
-			expectedEmail string
-			expectedName string
+		tests := []struct {
+			email            string
+			name             string
+			nickname         string
+			expectedEmail    string
+			expectedName     string
 			expectedNickname string
 		}{
 			{" tt@tt.com", " test", " test_test", "tt@tt.com", "test", "test_test"},
@@ -37,28 +37,28 @@ func TestPrepare(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(
 				fmt.Sprintf("email: %s, name: %s, password: %s",
-				tt.email, tt.name, tt.nickname,
-			), func(t *testing.T) {
-				user := createDefaultUser()
-				user.Email = tt.email
-				user.Name = tt.name
-				user.Nickname = tt.nickname
+					tt.email, tt.name, tt.nickname,
+				), func(t *testing.T) {
+					user := createDefaultUser()
+					user.Email = tt.email
+					user.Name = tt.name
+					user.Nickname = tt.nickname
 
-				err := user.Prepare(false)
-				if err != nil {
-					t.Fatalf("unexpected error: %v", err)
-				}
+					err := user.Prepare(false)
+					if err != nil {
+						t.Fatalf("unexpected error: %v", err)
+					}
 
-				if user.Email != tt.expectedEmail {
-					t.Fatalf("expected '%s', but got '%s'", tt.expectedEmail, user.Email)
-				}
-				if user.Name != tt.expectedName {
-					t.Fatalf("expected '%s', but got '%s'", tt.expectedName, user.Name)
-				}
-				if user.Nickname != tt.expectedNickname {
-					t.Fatalf("expected '%s', but got '%s'", tt.expectedNickname, user.Nickname)
-				}
-			})
+					if user.Email != tt.expectedEmail {
+						t.Fatalf("expected '%s', but got '%s'", tt.expectedEmail, user.Email)
+					}
+					if user.Name != tt.expectedName {
+						t.Fatalf("expected '%s', but got '%s'", tt.expectedName, user.Name)
+					}
+					if user.Nickname != tt.expectedNickname {
+						t.Fatalf("expected '%s', but got '%s'", tt.expectedNickname, user.Nickname)
+					}
+				})
 		}
 	})
 
@@ -74,13 +74,13 @@ func TestPrepare(t *testing.T) {
 	})
 
 	t.Run("null, invalid and valid params", func(t *testing.T) {
-		tests := []struct{
-			email string
-			name string
-			nickname string
-			password string
+		tests := []struct {
+			email      string
+			name       string
+			nickname   string
+			password   string
 			isUpdating bool
-			error bool
+			error      bool
 		}{
 			{"", "test", "test_test", "12345", false, true},
 			{"tt@tt.com", "", "test_test", "12345", false, true},
@@ -98,8 +98,8 @@ func TestPrepare(t *testing.T) {
 				tt.email, tt.name, tt.nickname, tt.password,
 			), func(t *testing.T) {
 				user := users.User{
-					Email: tt.email,
-					Name: tt.name,
+					Email:    tt.email,
+					Name:     tt.name,
 					Nickname: tt.nickname,
 					Password: tt.password,
 				}
@@ -116,12 +116,12 @@ func TestPrepare(t *testing.T) {
 }
 
 func TestPrepareLogin(t *testing.T) {
-	tests := []struct{
-		name string
-		email string
-		password string
+	tests := []struct {
+		name           string
+		email          string
+		password       string
 		formattedEmail string
-		error bool
+		error          bool
 	}{
 		{"trim left email spaces", "  teste@teste.com", "12345", "teste@teste.com", false},
 		{"trim right email spaces", "teste@teste.com   ", "12345", "teste@teste.com", false},

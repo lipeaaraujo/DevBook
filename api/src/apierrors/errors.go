@@ -6,9 +6,9 @@ import (
 )
 
 type APIError struct {
-	Status int `json:"-"`
+	Status  int    `json:"-"`
 	Message string `json:"message"`
-	Err error `json:"-"`
+	Err     error  `json:"-"`
 }
 
 func (e *APIError) Error() string {

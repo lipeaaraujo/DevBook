@@ -14,12 +14,12 @@ type UserRepoInterface interface {
 	Get(nameQuery string) ([]User, error)
 	GetById(userId string) (User, error)
 	GetByEmail(email string) (User, error)
-	Update(userId string, user *User) (error)
-	Delete(userId string) (error)
-	Follow(userId, followId string) (error)
-	Unfollow(userId, unfollowId string) (error)
+	Update(userId string, user *User) error
+	Delete(userId string) error
+	Follow(userId, followId string) error
+	Unfollow(userId, unfollowId string) error
 	GetPwd(userId string) (string, error)
-	UpdatePwd(userId, newPwd string) (error)
+	UpdatePwd(userId, newPwd string) error
 }
 
 type UserRepository struct {
@@ -145,7 +145,7 @@ func (repo UserRepository) GetByEmail(email string) (User, error) {
 	return user, nil
 }
 
-func (repo UserRepository) Update(userId string, user *User) (error) {
+func (repo UserRepository) Update(userId string, user *User) error {
 	statement, err := repo.db.Prepare(
 		"update users set name = $1, nickname = $2, email = $3, updated_at = $4 where id = $5",
 	)
