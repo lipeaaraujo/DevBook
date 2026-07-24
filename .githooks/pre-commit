@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+unformatted=$(gofmt -l .)
+if [ -n "$unformatted" ]; then
+	echo "gofmt needed on:" >&2
+	echo "$unformatted" >&2
+	exit 1
+fi
