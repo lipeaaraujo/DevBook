@@ -1,5 +1,8 @@
 #!/bin/sh
 set -e
+echo "Running go vet..."
+go vet ./...
+echo "Running gofmt check..."
 unformatted=$(gofmt -l .)
 if [ -n "$unformatted" ]; then
 	echo "gofmt needed on:" >&2
