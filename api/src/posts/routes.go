@@ -26,9 +26,15 @@ func CreatePostRoutes(controller *PostController) []routes.Route {
 			RequiresAuth: true,
 		},
 		{
-			URI:          "/post/user/{authorId}",
+			URI:          "/user/{authorId}/post",
 			Method:       http.MethodGet,
 			Handler:      controller.GetByAuthor,
+			RequiresAuth: true,
+		},
+		{
+			URI:          "/feed",
+			Method:       http.MethodGet,
+			Handler:      controller.GetFromFollowers,
 			RequiresAuth: true,
 		},
 		{

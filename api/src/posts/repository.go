@@ -130,6 +130,40 @@ func (repo PostRepo) GetByAuthor(authorId string, title string) ([]Post, error) 
 	return posts, nil
 }
 
+func (repo PostRepo) GetFromFollowers(userId string) ([]Post, error) {
+	rows, err := repo.db.Query(
+		`select p.id, p.title, p.description, p.author_id, p.created_at, p.updated_at from 
+		 followers f inner join posts p on f.user_id = p.author_id
+		 where f.follower_id = $1
+		 order by p.created_at desc`,
+		userId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	posts := []Post{}
+	for rows.Next() {
+		var post Post
+
+		if err := rows.Scan(
+			&post.Id,
+			&post.Title,
+			&post.Description,
+			&post.AuthorId,
+			&post.CreatedAt,
+			&post.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return posts, err
+}
+
 func (repo PostRepo) Update(post *Post) error {
 	statement, err := repo.db.Prepare(
 		`update posts set title = $1, description = $2, updated_at = $3 where id = $4`,

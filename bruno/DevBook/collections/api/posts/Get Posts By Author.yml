@@ -5,14 +5,14 @@ info:
 
 http:
   method: GET
-  url: "{{API_URL}}/post/user/:authorId"
+  url: "{{API_URL}}/user/:authorId/post"
   params:
     - name: title
-      value: t
+      value: ""
       type: query
       disabled: true
     - name: authorId
-      value: ""
+      value: 0c4dc840-51de-49c9-824e-2d9aa7f8f19c
       type: path
   auth:
     type: bearer

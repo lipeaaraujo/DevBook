@@ -91,6 +91,22 @@ func (controller PostController) GetByAuthor(w http.ResponseWriter, r *http.Requ
 	responses.JSON(w, http.StatusOK, posts)
 }
 
+func (controller PostController) GetFromFollowers(w http.ResponseWriter, r *http.Request) {
+	userId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	posts, err := controller.service.GetByFollowers(userId)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, posts)
+}
+
 func (controller PostController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	postId := params["postId"]

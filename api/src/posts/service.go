@@ -58,6 +58,19 @@ func (service PostService) GetByAuthor(authorId string, title string) ([]Post, e
 	return posts, err
 }
 
+func (service PostService) GetByFollowers(userId string) ([]Post, error) {
+	if userId == "" {
+		return nil, apierrors.BadRequest("Invalid userId")
+	}
+
+	posts, err := service.repo.GetFromFollowers(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
 func (service PostService) UpdatePost(post *Post) error {
 	if err := post.PrepareUpdate(); err != nil {
 		return err
