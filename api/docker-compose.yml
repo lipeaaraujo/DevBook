@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:18
     ports:
       - "${POSTGRES_PORT}:5432"
     environment:
@@ -16,7 +16,7 @@ services:
     networks:
       - devbook-db-network
     volumes:
-      - devbook-db:/var/lib/postgresql/devbook-data
+      - devbook-db:/var/lib/postgresql
   pgadmin:
     container_name: pgadmin4_container
     image: dpage/pgadmin4
