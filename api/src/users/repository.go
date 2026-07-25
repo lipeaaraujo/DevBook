@@ -12,7 +12,7 @@ import (
 type UserRepoInterface interface {
 	Create(user *User) (string, error)
 	Get(nameQuery string) ([]User, error)
-	GetById(userId string) (User, error)
+	GetById(userId, viewerId string) (User, error)
 	GetByEmail(email string) (User, error)
 	Update(userId string, user *User) error
 	Delete(userId string) error
@@ -88,10 +88,17 @@ func (repo UserRepository) Get(nameQuery string) ([]User, error) {
 	return users, nil
 }
 
-func (repo UserRepository) GetById(userId string) (User, error) {
+// GetById returns the user plus the relationship data the profile screen needs.
+// viewerId is whoever is asking, so isFollowing can be answered in the same trip.
+func (repo UserRepository) GetById(userId, viewerId string) (User, error) {
 	rows, err := repo.db.Query(
-		"select id, name, nickname, email, created_at, updated_at from users where id = $1",
+		`select u.id, u.name, u.nickname, u.email, u.created_at, u.updated_at,
+			(select count(*) from followers where user_id = u.id) as followers_count,
+			(select count(*) from followers where follower_id = u.id) as following_count,
+			exists(select 1 from followers where user_id = u.id and follower_id = $2) as is_following
+		 from users u where u.id = $1`,
 		userId,
+		viewerId,
 	)
 
 	if err != nil {
@@ -111,6 +118,9 @@ func (repo UserRepository) GetById(userId string) (User, error) {
 		&user.Email,
 		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.FollowersCount,
+		&user.FollowingCount,
+		&user.IsFollowing,
 	)
 	if err != nil {
 		return User{}, err

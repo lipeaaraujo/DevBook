@@ -73,7 +73,13 @@ func (controller UserController) GetUser(
 	params := mux.Vars(r)
 	userId := params["userId"]
 
-	user, err := controller.service.GetById(userId)
+	viewerId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	user, err := controller.service.GetById(userId, viewerId)
 	if err != nil {
 		responses.Error(w, err)
 		return

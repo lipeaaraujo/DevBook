@@ -18,7 +18,7 @@ func JSON(w http.ResponseWriter, statusCode int, data any) {
 	}
 
 	if err := json.NewEncoder(w).Encode(data); err != nil {
-		log.Fatal(err)
+		log.Println("failed to encode response: ", err)
 	}
 }
 

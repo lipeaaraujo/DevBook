@@ -33,11 +33,38 @@ func (repo PostRepo) Create(post Post) (string, error) {
 	return insertedId, nil
 }
 
-func (repo PostRepo) GetById(id string) (Post, error) {
-	rows, err := repo.db.Query(
-		"select id, title, description, author_id, created_at, updated_at from posts where id = $1",
-		id,
+// Every read returns the author's name and nickname, so clients don't have to
+// resolve author_id into a person themselves.
+const selectPost = `select p.id, p.title, p.description, p.author_id, u.name, u.nickname, p.created_at, p.updated_at
+	from posts p inner join users u on u.id = p.author_id`
+
+func scanPost(rows *sql.Rows, post *Post) error {
+	return rows.Scan(
+		&post.Id,
+		&post.Title,
+		&post.Description,
+		&post.AuthorId,
+		&post.AuthorName,
+		&post.AuthorNickname,
+		&post.CreatedAt,
+		&post.UpdatedAt,
 	)
+}
+
+func scanPosts(rows *sql.Rows) ([]Post, error) {
+	posts := []Post{}
+	for rows.Next() {
+		var post Post
+		if err := scanPost(rows, &post); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, rows.Err()
+}
+
+func (repo PostRepo) GetById(id string) (Post, error) {
+	rows, err := repo.db.Query(selectPost+" where p.id = $1", id)
 	if err != nil {
 		return Post{}, err
 	}
@@ -48,14 +75,7 @@ func (repo PostRepo) GetById(id string) (Post, error) {
 	}
 
 	var post Post
-	if err := rows.Scan(
-		&post.Id,
-		&post.Title,
-		&post.Description,
-		&post.AuthorId,
-		&post.CreatedAt,
-		&post.UpdatedAt,
-	); err != nil {
+	if err := scanPost(rows, &post); err != nil {
 		return Post{}, err
 	}
 
@@ -65,42 +85,21 @@ func (repo PostRepo) GetById(id string) (Post, error) {
 func (repo PostRepo) Get(title string) ([]Post, error) {
 	titleQuery := fmt.Sprintf("%%%s%%", title)
 
-	rows, err := repo.db.Query(
-		"select id, title, description, author_id, created_at, updated_at from posts where title ILIKE $1",
-		titleQuery,
-	)
+	rows, err := repo.db.Query(selectPost+" where p.title ILIKE $1", titleQuery)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var posts []Post
-	for rows.Next() {
-		var post Post
-
-		if err := rows.Scan(
-			&post.Id,
-			&post.Title,
-			&post.Description,
-			&post.AuthorId,
-			&post.CreatedAt,
-			&post.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-
-		posts = append(posts, post)
-	}
-
-	return posts, nil
+	return scanPosts(rows)
 }
 
 func (repo PostRepo) GetByAuthor(authorId string, title string) ([]Post, error) {
 	titleQuery := fmt.Sprintf("%%%s%%", title)
+
 	rows, err := repo.db.Query(
-		`select id, title, description, author_id, created_at, updated_at from posts
-			where author_id = $1
-			and title ILIKE $2`,
+		selectPost+` where p.author_id = $1 and p.title ILIKE $2
+			order by p.created_at desc`,
 		authorId,
 		titleQuery,
 	)
@@ -109,31 +108,12 @@ func (repo PostRepo) GetByAuthor(authorId string, title string) ([]Post, error) 
 	}
 	defer rows.Close()
 
-	var posts []Post
-	for rows.Next() {
-		var post Post
-
-		if err := rows.Scan(
-			&post.Id,
-			&post.Title,
-			&post.Description,
-			&post.AuthorId,
-			&post.CreatedAt,
-			&post.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-
-		posts = append(posts, post)
-	}
-
-	return posts, nil
+	return scanPosts(rows)
 }
 
 func (repo PostRepo) GetFromFollowers(userId string) ([]Post, error) {
 	rows, err := repo.db.Query(
-		`select p.id, p.title, p.description, p.author_id, p.created_at, p.updated_at from 
-		 followers f inner join posts p on f.user_id = p.author_id
+		selectPost+` inner join followers f on f.user_id = p.author_id
 		 where f.follower_id = $1
 		 order by p.created_at desc`,
 		userId,
@@ -143,25 +123,7 @@ func (repo PostRepo) GetFromFollowers(userId string) ([]Post, error) {
 	}
 	defer rows.Close()
 
-	posts := []Post{}
-	for rows.Next() {
-		var post Post
-
-		if err := rows.Scan(
-			&post.Id,
-			&post.Title,
-			&post.Description,
-			&post.AuthorId,
-			&post.CreatedAt,
-			&post.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-
-		posts = append(posts, post)
-	}
-
-	return posts, err
+	return scanPosts(rows)
 }
 
 func (repo PostRepo) Update(post *Post) error {
