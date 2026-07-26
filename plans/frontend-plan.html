@@ -1,0 +1,660 @@
+<title>DevBook — Frontend Plan</title>
+<style>
+  :root {
+    --bg: #f5f7f8;
+    --surface: #ffffff;
+    --surface-2: #eef1f3;
+    --ink: #171b22;
+    --muted: #5c6673;
+    --line: #dde3e7;
+    --accent: #0f6660;
+    --accent-soft: #e0efed;
+    --warn: #8f5610;
+    --warn-soft: #f6ecdc;
+    --crit: #97382c;
+    --crit-soft: #f7e5e1;
+    --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --measure: 68ch;
+    --wide: 1080px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1114;
+      --surface: #161a1f;
+      --surface-2: #1d232a;
+      --ink: #e4e8ed;
+      --muted: #98a2ae;
+      --line: #272d35;
+      --accent: #58cfc4;
+      --accent-soft: #11312e;
+      --warn: #d9a463;
+      --warn-soft: #2c2318;
+      --crit: #e08476;
+      --crit-soft: #2e1c19;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1114;
+    --surface: #161a1f;
+    --surface-2: #1d232a;
+    --ink: #e4e8ed;
+    --muted: #98a2ae;
+    --line: #272d35;
+    --accent: #58cfc4;
+    --accent-soft: #11312e;
+    --warn: #d9a463;
+    --warn-soft: #2c2318;
+    --crit: #e08476;
+    --crit-soft: #2e1c19;
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f7f8;
+    --surface: #ffffff;
+    --surface-2: #eef1f3;
+    --ink: #171b22;
+    --muted: #5c6673;
+    --line: #dde3e7;
+    --accent: #0f6660;
+    --accent-soft: #e0efed;
+    --warn: #8f5610;
+    --warn-soft: #f6ecdc;
+    --crit: #97382c;
+    --crit-soft: #f7e5e1;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: var(--wide);
+    margin: 0 auto;
+    padding: 3.5rem 1.25rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.75rem;
+  }
+  .page > * { max-width: var(--measure); }
+  .page > .wide, .page > .tldr, .page > figure { max-width: 100%; }
+
+  /* masthead */
+  .masthead { display: flex; flex-direction: column; gap: .5rem; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 2.9rem);
+    line-height: 1.1;
+    font-weight: 600;
+    text-wrap: balance;
+    letter-spacing: -.01em;
+  }
+  .standfirst { color: var(--muted); font-size: 1.05rem; }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-wrap: balance;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  h2 .num {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--accent);
+    vertical-align: .35em;
+    margin-right: .55rem;
+    letter-spacing: .05em;
+  }
+  h3 {
+    font-family: var(--font-body);
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    margin-top: .5rem;
+  }
+  p { margin: 0; }
+  .page section { display: flex; flex-direction: column; gap: 1rem; }
+  section > .wide, section > figure { max-width: 100%; }
+
+  a { color: var(--accent); }
+  strong { font-weight: 650; }
+  code {
+    font-family: var(--font-mono);
+    font-size: .86em;
+    background: var(--surface-2);
+    border-radius: 3px;
+    padding: .1em .35em;
+  }
+
+  /* tl;dr */
+  .tldr {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--accent);
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+  }
+  .tldr p { max-width: var(--measure); }
+  .tldr .eyebrow { color: var(--accent); }
+
+  ul, ol { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: .45rem; }
+  li::marker { color: var(--muted); }
+
+  /* tables */
+  .wide { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  th, td { text-align: left; padding: .6rem .85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono, th.mono { font-family: var(--font-mono); font-size: .8rem; white-space: nowrap; }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .15rem .45rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pill.get { background: var(--accent-soft); color: var(--accent); }
+  .pill.post { background: var(--warn-soft); color: var(--warn); }
+  .pill.put { background: var(--surface-2); color: var(--muted); }
+  .pill.del { background: var(--crit-soft); color: var(--crit); }
+  .pill.blocker { background: var(--crit-soft); color: var(--crit); }
+  .pill.api { background: var(--warn-soft); color: var(--warn); }
+  .pill.fe { background: var(--accent-soft); color: var(--accent); }
+
+  /* figures */
+  figure { margin: 0; display: flex; flex-direction: column; gap: .6rem; }
+  .figbox { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); padding: 1.25rem; }
+  figure svg { display: block; min-width: 640px; width: 100%; height: auto; }
+  figcaption { font-size: .82rem; color: var(--muted); font-family: var(--font-mono); }
+
+  /* svg tokens */
+  .box { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; }
+  .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+  .box-dash { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .t { fill: var(--ink); font-family: var(--font-body); font-size: 13px; font-weight: 600; }
+  .t-sm { fill: var(--muted); font-family: var(--font-mono); font-size: 10.5px; }
+  .t-ac { fill: var(--accent); font-family: var(--font-mono); font-size: 10.5px; }
+  .ln { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+  .ln-dash { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; }
+  .lane { stroke: var(--line); stroke-width: 1.5; }
+  .head { fill: var(--muted); }
+
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .card { background: var(--surface); padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: .35rem; }
+  .card .k { font-family: var(--font-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .card .v { font-weight: 650; }
+  .card .why { font-size: .85rem; color: var(--muted); }
+
+  .gap { border: 1px solid var(--line); background: var(--surface); padding: 1rem 1.15rem; display: flex; flex-direction: column; gap: .5rem; }
+  .gap.stack { display: flex; }
+  .gap-head { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+  .gap-head h3 { margin: 0; font-size: 1rem; }
+  .gaps { display: flex; flex-direction: column; gap: .75rem; }
+  .fix { font-size: .88rem; }
+  .fix b { font-family: var(--font-mono); font-size: .76rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-right: .4rem; }
+
+  .phase { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+  .phase:last-child { border-bottom: none; }
+  .phase .n { font-family: var(--font-mono); font-size: 1.5rem; color: var(--accent); line-height: 1; min-width: 2rem; font-variant-numeric: tabular-nums; }
+  .phase .body { display: flex; flex-direction: column; gap: .4rem; }
+  .phase .body .ship { font-size: .85rem; color: var(--muted); }
+
+  footer { border-top: 1px solid var(--line); padding-top: 1rem; font-size: .82rem; color: var(--muted); font-family: var(--font-mono); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div class="eyebrow">DevBook · Frontend Implementation Plan</div>
+    <h1>A React client for the Go API you already wrote</h1>
+    <p class="standfirst">Five routes, one fetch wrapper, no state manager. Plus four things the API has to give up before the UI can be honest about them.</p>
+  </header>
+
+  <div class="tldr">
+    <div class="eyebrow">TL;DR</div>
+    <p><strong>Stack:</strong> Vite + React + TypeScript, <strong>Mantine</strong> for UI (AppShell, forms, modals, notifications in one dependency), <strong>TanStack Query</strong> for server state, <strong>React Router</strong> for five routes. Auth is a JWT in <code>localStorage</code>, decoded client-side for the user id — the API has no <code>/me</code>.</p>
+    <p><strong>The CORS problem solves itself:</strong> the API has no CORS middleware, so the dev server proxies <code>/api</code> to it. Same origin, no preflight, no backend change.</p>
+    <p><strong>Four API gaps block real features:</strong> posts carry no author name (feed would show UUIDs), nothing reports follow state (the Follow button can't survive a reload), <code>description</code> is <code>VARCHAR(255)</code> while the model allows 2000 (a guaranteed 500), and <code>responses.JSON</code> calls <code>log.Fatal</code> on an encode error. Fix those before Phase 3.</p>
+  </div>
+
+  <section>
+    <h2><span class="num">01</span>What the API already gives you</h2>
+    <p>Every route below is live in <code>api/src/*/routes.go</code>. Auth is a bearer JWT with a 6-hour expiry and a <code>userId</code> claim; there is no refresh token.</p>
+    <div class="wide">
+      <table>
+        <thead>
+          <tr><th>Method</th><th>Path</th><th>Auth</th><th>Returns</th><th>Notes for the UI</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill post">POST</span></td><td class="mono">/login</td><td>—</td><td class="mono">{ token }</td><td>Body is <code>{email, password}</code></td></tr>
+          <tr><td><span class="pill post">POST</span></td><td class="mono">/users</td><td>—</td><td class="mono">201 user</td><td>Sign-up. Needs name, nickname, email, password</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td class="mono">/users?user=</td><td>yes</td><td class="mono">User[]</td><td>ILIKE on name <em>or</em> nickname; empty query returns everyone</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td class="mono">/users/{userId}</td><td>yes</td><td class="mono">User</td><td>No follower counts, no follow state</td></tr>
+          <tr><td><span class="pill put">PUT</span></td><td class="mono">/users/{userId}</td><td>self</td><td class="mono">204</td><td>Validation requires <em>all</em> of name, nickname, email — send the full object</td></tr>
+          <tr><td><span class="pill del">DELETE</span></td><td class="mono">/users/{userId}</td><td>self</td><td class="mono">204</td><td>Not in scope — no UI planned</td></tr>
+          <tr><td><span class="pill post">POST</span></td><td class="mono">/users/{userId}/follow</td><td>yes</td><td class="mono">204</td><td>Follower is taken from the token</td></tr>
+          <tr><td><span class="pill post">POST</span></td><td class="mono">/users/{userId}/unfollow</td><td>yes</td><td class="mono">204</td><td></td></tr>
+          <tr><td><span class="pill post">POST</span></td><td class="mono">/users/{userId}/change-password</td><td>self</td><td class="mono">204</td><td>Body is <code>{currentPassword, newPassword}</code></td></tr>
+          <tr><td><span class="pill post">POST</span></td><td class="mono">/post</td><td>yes</td><td class="mono">201 { id }</td><td>Author comes from the token; returns only the id</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td class="mono">/feed</td><td>yes</td><td class="mono">Post[]</td><td>Posts by people you follow, newest first. <em>Excludes your own.</em></td></tr>
+          <tr><td><span class="pill get">GET</span></td><td class="mono">/user/{authorId}/post</td><td>yes</td><td class="mono">Post[]</td><td>Powers the profile timeline</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td class="mono">/post?title=</td><td>yes</td><td class="mono">Post[]</td><td>Global search — not used by any planned screen</td></tr>
+          <tr><td><span class="pill get">GET</span></td><td class="mono">/post/{postId}</td><td>yes</td><td class="mono">Post</td><td>Only needed if you add a permalink page</td></tr>
+          <tr><td><span class="pill put">PUT</span></td><td class="mono">/post/{postId}</td><td>author</td><td class="mono">204</td><td>Title ≤ 50 chars</td></tr>
+          <tr><td><span class="pill del">DELETE</span></td><td class="mono">/post/{postId}</td><td>author</td><td class="mono">204</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted)">Errors are uniform: any non-2xx returns <code>{ "message": "..." }</code>. One <code>if (!res.ok) throw new Error(body.message)</code> in the fetch wrapper covers the entire surface.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span>How the pieces sit together</h2>
+    <p>The only structural decision here is the dev proxy. The Go router wires up <code>Logger</code> and <code>Auth</code> and nothing else — there is no CORS middleware, so a browser on <code>:5173</code> calling <code>:4000</code> directly dies at the preflight. Vite's built-in proxy makes every call same-origin instead, which costs one config block and zero Go code.</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 920 300" role="img" aria-label="Architecture: React app in the browser calls /api on the Vite dev server, which proxies to the Go API, which talks to Postgres.">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="head"></path>
+            </marker>
+          </defs>
+
+          <!-- browser -->
+          <rect x="10" y="40" width="250" height="200" rx="3" class="box"></rect>
+          <text x="26" y="66" class="t">Browser · React SPA</text>
+          <text x="26" y="84" class="t-sm">vite + typescript</text>
+          <rect x="26" y="98" width="218" height="34" rx="2" class="box-accent"></rect>
+          <text x="38" y="119" class="t-sm">React Router · 5 routes</text>
+          <rect x="26" y="140" width="218" height="34" rx="2" class="box-accent"></rect>
+          <text x="38" y="161" class="t-sm">TanStack Query · server cache</text>
+          <rect x="26" y="182" width="218" height="34" rx="2" class="box-accent"></rect>
+          <text x="38" y="203" class="t-sm">Mantine · AppShell, forms, modals</text>
+
+          <!-- api.ts -->
+          <rect x="310" y="100" width="130" height="80" rx="3" class="box"></rect>
+          <text x="326" y="132" class="t">api.ts</text>
+          <text x="326" y="150" class="t-sm">adds Bearer</text>
+          <text x="326" y="165" class="t-sm">throws .message</text>
+
+          <!-- proxy -->
+          <rect x="490" y="100" width="150" height="80" rx="3" class="box"></rect>
+          <text x="506" y="132" class="t">Vite dev server</text>
+          <text x="506" y="150" class="t-sm">:5173</text>
+          <text x="506" y="165" class="t-ac">proxy /api → :4000</text>
+
+          <!-- go api -->
+          <rect x="690" y="70" width="150" height="80" rx="3" class="box"></rect>
+          <text x="706" y="102" class="t">Go API · mux</text>
+          <text x="706" y="120" class="t-sm">:4000</text>
+          <text x="706" y="135" class="t-sm">Logger + Auth mw</text>
+
+          <!-- postgres -->
+          <rect x="690" y="190" width="150" height="60" rx="3" class="box"></rect>
+          <text x="706" y="217" class="t">PostgreSQL</text>
+          <text x="706" y="235" class="t-sm">users · followers · posts</text>
+
+          <!-- arrows -->
+          <line x1="262" y1="140" x2="304" y2="140" class="ln" marker-end="url(#ar)"></line>
+          <line x1="442" y1="140" x2="484" y2="140" class="ln" marker-end="url(#ar)"></line>
+          <path d="M 642 140 L 665 140 L 665 110 L 684 110" class="ln" marker-end="url(#ar)"></path>
+          <line x1="765" y1="152" x2="765" y2="184" class="ln" marker-end="url(#ar)"></line>
+
+          <text x="452" y="196" class="t-sm">fetch('/api/…')</text>
+          <text x="452" y="211" class="t-ac">same origin → no CORS</text>
+          <text x="600" y="72" class="t-sm">Authorization: Bearer &lt;jwt&gt;</text>
+
+          <!-- prod note -->
+          <rect x="490" y="240" width="350" height="44" rx="3" class="box-dash"></rect>
+          <text x="506" y="258" class="t-sm">production: same trick behind one nginx/Caddy origin,</text>
+          <text x="506" y="272" class="t-sm">or add a CORS middleware in router.Generate()</text>
+        </svg>
+      </div>
+      <figcaption>fig. 1 — the proxy is the whole CORS story; nothing else in the backend moves.</figcaption>
+    </figure>
+
+    <h3>Stack choices</h3>
+    <div class="cards">
+      <div class="card"><span class="k">UI library</span><span class="v">Mantine</span><span class="why">AppShell, Modal, Autocomplete, <code>useForm</code> with validation, and notifications ship together. shadcn/ui would mean a Tailwind setup plus copying every component in by hand.</span></div>
+      <div class="card"><span class="k">Server state</span><span class="v">TanStack Query</span><span class="why">Caching, refetch and invalidation after mutations. This is what removes the <code>useEffect</code>-plus-three-<code>useState</code> pattern from every screen.</span></div>
+      <div class="card"><span class="k">Client state</span><span class="v">none</span><span class="why">The only global state is the token, and it lives in <code>localStorage</code>. No Redux, no Zustand, no context provider.</span></div>
+      <div class="card"><span class="k">Forms</span><span class="v">@mantine/form</span><span class="why">Already in the Mantine install. React Hook Form + Zod is a second validation system for four small forms.</span></div>
+      <div class="card"><span class="k">HTTP</span><span class="v">fetch, ~30 lines</span><span class="why">Base path, bearer header, error unwrapping, 401 → clear token and bounce to <code>/login</code>. Axios adds nothing here.</span></div>
+      <div class="card"><span class="k">Current user</span><span class="v">decode the JWT</span><span class="why"><code>JSON.parse(atob(token.split('.')[1]))</code> yields <code>userId</code> and <code>exp</code>. No library, and no <code>/me</code> endpoint to build.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span>Five routes, and what guards them</h2>
+    <p>Editing a profile and changing a password are one screen with two cards. Creating and editing a post are one modal, not a route — the form is identical and post bodies are short. Finding other people is an autocomplete in the header that hits <code>GET /users?user=</code> and navigates on select, so there is no search page either.</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 920 330" role="img" aria-label="Route map: /login and /register are public; RequireAuth wraps the AppShell containing the feed, profile and settings routes.">
+          <defs>
+            <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="head"></path>
+            </marker>
+          </defs>
+
+          <rect x="20" y="130" width="120" height="52" rx="3" class="box"></rect>
+          <text x="36" y="153" class="t">routes.tsx</text>
+          <text x="36" y="170" class="t-sm">react-router</text>
+
+          <!-- public -->
+          <rect x="215" y="30" width="180" height="46" rx="3" class="box"></rect>
+          <text x="231" y="50" class="t">/login</text>
+          <text x="231" y="67" class="t-sm">POST /login → store token</text>
+
+          <rect x="215" y="90" width="180" height="46" rx="3" class="box"></rect>
+          <text x="231" y="110" class="t">/register</text>
+          <text x="231" y="127" class="t-sm">POST /users → then log in</text>
+
+          <text x="215" y="20" class="t-ac">public</text>
+
+          <!-- guard -->
+          <rect x="215" y="175" width="180" height="52" rx="3" class="box-accent"></rect>
+          <text x="231" y="197" class="t">&lt;RequireAuth&gt;</text>
+          <text x="231" y="214" class="t-sm">no token or exp passed →</text>
+          <text x="231" y="228" class="t-sm">Navigate to /login</text>
+
+          <rect x="215" y="250" width="180" height="46" rx="3" class="box"></rect>
+          <text x="231" y="270" class="t">&lt;Shell&gt;</text>
+          <text x="231" y="287" class="t-sm">header · search · avatar menu</text>
+
+          <!-- app routes -->
+          <rect x="475" y="150" width="200" height="52" rx="3" class="box"></rect>
+          <text x="491" y="172" class="t">/</text>
+          <text x="491" y="189" class="t-sm">feed + new post button</text>
+
+          <rect x="475" y="215" width="200" height="52" rx="3" class="box"></rect>
+          <text x="491" y="237" class="t">/users/:id</text>
+          <text x="491" y="254" class="t-sm">profile + that user's posts</text>
+
+          <rect x="475" y="280" width="200" height="46" rx="3" class="box"></rect>
+          <text x="491" y="302" class="t">/settings</text>
+          <text x="491" y="319" class="t-sm">edit profile · change password</text>
+
+          <!-- shared modal -->
+          <rect x="725" y="182" width="175" height="56" rx="3" class="box-accent"></rect>
+          <text x="741" y="204" class="t">&lt;PostForm&gt; modal</text>
+          <text x="741" y="221" class="t-sm">create and edit,</text>
+          <text x="741" y="234" class="t-sm">same component</text>
+
+          <!-- lines -->
+          <path d="M 142 145 L 178 145 L 178 53 L 209 53" class="ln" marker-end="url(#ar2)"></path>
+          <path d="M 142 152 L 178 152 L 178 113 L 209 113" class="ln" marker-end="url(#ar2)"></path>
+          <path d="M 142 165 L 178 165 L 178 201 L 209 201" class="ln" marker-end="url(#ar2)"></path>
+          <line x1="305" y1="229" x2="305" y2="246" class="ln" marker-end="url(#ar2)"></line>
+          <path d="M 397 273 L 435 273 L 435 176 L 469 176" class="ln" marker-end="url(#ar2)"></path>
+          <path d="M 397 273 L 435 273 L 435 241 L 469 241" class="ln" marker-end="url(#ar2)"></path>
+          <path d="M 397 273 L 435 273 L 435 303 L 469 303" class="ln" marker-end="url(#ar2)"></path>
+          <path d="M 677 176 L 700 176 L 700 205 L 719 205" class="ln-dash" marker-end="url(#ar2)"></path>
+          <path d="M 677 241 L 700 241 L 700 215 L 719 215" class="ln-dash" marker-end="url(#ar2)"></path>
+        </svg>
+      </div>
+      <figcaption>fig. 2 — <code>/users/:id</code> renders your own profile too; it just grows an Edit control when the id matches the token.</figcaption>
+    </figure>
+
+    <div class="wide">
+      <table>
+        <thead>
+          <tr><th>Screen</th><th>Requirement it covers</th><th>Calls</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">/login</td><td>Log in</td><td class="mono">POST /login</td></tr>
+          <tr><td class="mono">/register</td><td>(not requested — but nothing else can create a user)</td><td class="mono">POST /users → POST /login</td></tr>
+          <tr><td class="mono">/</td><td>See the feed · create a post</td><td class="mono">GET /feed · POST /post</td></tr>
+          <tr><td class="mono">/users/:id</td><td>See own profile and posts · edit and delete posts · open other profiles · follow</td><td class="mono">GET /users/{id} · GET /user/{id}/post · PUT|DELETE /post/{id} · POST /users/{id}/follow|unfollow</td></tr>
+          <tr><td class="mono">/settings</td><td>Edit profile · change password</td><td class="mono">PUT /users/{id} · POST /users/{id}/change-password</td></tr>
+          <tr><td class="mono">header search</td><td>Find other users to open</td><td class="mono">GET /users?user=</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span>Auth, end to end</h2>
+    <p>There is no refresh token and the JWT lasts six hours, so expiry is a fact of life rather than an edge case. Two places handle it: the route guard checks <code>exp</code> before rendering, and the fetch wrapper treats any 401 as "the session is over".</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 920 370" role="img" aria-label="Sequence: login posts credentials, receives a token, stores it, decodes the user id, and attaches a bearer header to later requests; a 401 clears the token and returns to login.">
+          <defs>
+            <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" class="head"></path>
+            </marker>
+          </defs>
+
+          <!-- lanes -->
+          <rect x="40" y="20" width="150" height="34" rx="3" class="box"></rect>
+          <text x="56" y="42" class="t">Login screen</text>
+          <line x1="115" y1="54" x2="115" y2="350" class="lane"></line>
+
+          <rect x="360" y="20" width="150" height="34" rx="3" class="box"></rect>
+          <text x="376" y="42" class="t">api.ts + storage</text>
+          <line x1="435" y1="54" x2="435" y2="350" class="lane"></line>
+
+          <rect x="690" y="20" width="150" height="34" rx="3" class="box"></rect>
+          <text x="706" y="42" class="t">Go API</text>
+          <line x1="765" y1="54" x2="765" y2="350" class="lane"></line>
+
+          <!-- steps -->
+          <line x1="115" y1="86" x2="429" y2="86" class="ln" marker-end="url(#ar3)"></line>
+          <text x="130" y="80" class="t-sm">submit { email, password }</text>
+
+          <line x1="435" y1="118" x2="759" y2="118" class="ln" marker-end="url(#ar3)"></line>
+          <text x="450" y="112" class="t-sm">POST /api/login</text>
+
+          <line x1="765" y1="150" x2="441" y2="150" class="ln" marker-end="url(#ar3)"></line>
+          <text x="470" y="144" class="t-sm">200 { token } · exp = now + 6h</text>
+
+          <rect x="345" y="166" width="185" height="44" rx="3" class="box-accent"></rect>
+          <text x="357" y="185" class="t-sm">localStorage.setItem('token')</text>
+          <text x="357" y="200" class="t-sm">atob(payload).userId</text>
+
+          <line x1="435" y1="232" x2="121" y2="232" class="ln" marker-end="url(#ar3)"></line>
+          <text x="150" y="226" class="t-sm">navigate to /</text>
+
+          <line x1="435" y1="272" x2="759" y2="272" class="ln" marker-end="url(#ar3)"></line>
+          <text x="450" y="266" class="t-sm">GET /api/feed · Authorization: Bearer …</text>
+
+          <line x1="765" y1="312" x2="441" y2="312" class="ln-dash" marker-end="url(#ar3)"></line>
+          <text x="470" y="306" class="t-sm">401 once the token expires</text>
+
+          <rect x="345" y="322" width="185" height="34" rx="3" class="box"></rect>
+          <text x="357" y="343" class="t-sm">clear token → redirect /login</text>
+        </svg>
+      </div>
+      <figcaption>fig. 3 — the token is the entire session model; there is nothing else to synchronise.</figcaption>
+    </figure>
+
+    <p style="font-size:.9rem"><strong>On <code>localStorage</code>:</strong> it is XSS-readable. For a study project against a local API that is an acceptable trade, and the alternative — an httpOnly cookie — needs the backend to set cookies and handle CSRF, which it currently does not. Worth knowing you made the choice rather than discovering it later.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span>What the API has to fix first</h2>
+    <p>Four of these are real blockers for features you asked for. Each fix is small; none of them are frontend problems you can paper over cleanly.</p>
+
+    <div class="gaps">
+
+      <div class="gap">
+        <div class="gap-head"><span class="pill api">api change</span><h3>Posts carry no author name</h3></div>
+        <p><code>Post</code> has <code>authorId</code> and nothing else, so a feed card can only render a UUID. The feed is the first screen after login — this is not cosmetic.</p>
+        <p class="fix"><b>fix</b>Join in the four post queries in <code>api/src/posts/repository.go</code>: <code>inner join users u on u.id = p.author_id</code>, select <code>u.nickname</code>, add <code>AuthorNickname</code> to the model. The feed query already joins <code>followers</code>, so the shape is familiar.</p>
+        <p class="fix"><b>alt</b>The frontend could fetch <code>GET /users</code> once and build an id → nickname map. It works, it needs no Go, and it downloads every user in the database to render one screen. Take the join.</p>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head"><span class="pill api">api change</span><h3>Nothing reports follow state</h3></div>
+        <p><code>GET /users/{id}</code> returns name, nickname, email, timestamps. There is no follower count and no way to ask "am I following this person". The Follow button can toggle optimistically and then render the wrong label on every reload — which makes the follow feature look broken even though the writes land.</p>
+        <p class="fix"><b>fix</b>Extend that endpoint with <code>followersCount</code>, <code>followingCount</code> and <code>isFollowing</code>, the last one computed against the token's user id — one extra query over the <code>followers</code> table.</p>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head"><span class="pill blocker">bug</span><h3><code>description</code> is <code>VARCHAR(255)</code>, the model allows 2000</h3></div>
+        <p><code>PrepareCreate</code> accepts descriptions up to 2000 characters; migration <code>000003</code> declares the column as <code>VARCHAR(255)</code>. Anything in between passes validation and dies at the insert as an unhandled 500. A textarea is the whole point of a post composer, so the UI will hit this on day one.</p>
+        <p class="fix"><b>fix</b>New migration: <code>alter table posts alter column description type varchar(2000)</code> — or drop the model's limit to 255 and enforce the same number in the form. Either way the two numbers must match, and the frontend counter reads from whichever you pick.</p>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head"><span class="pill blocker">bug</span><h3><code>responses.JSON</code> can kill the server</h3></div>
+        <p>On a JSON encode failure it calls <code>log.Fatal</code>, which exits the process. One malformed response takes the whole API down — an unpleasant thing to discover while clicking around a new UI.</p>
+        <p class="fix"><b>fix</b>Swap it for <code>log.Println</code>. One word.</p>
+      </div>
+
+      <div class="gap">
+        <div class="gap-head"><span class="pill fe">frontend handles it</span><h3>No <code>/me</code>, no CORS, singular <code>/post</code></h3></div>
+        <p>The missing <code>/me</code> is covered by decoding the JWT. CORS is covered by the dev proxy. The <code>/post</code> vs <code>/users</code> naming inconsistency is ugly and completely harmless — the client hardcodes both either way. Leave it.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span>Files</h2>
+    <p>Flat on purpose. Hooks live in one file until that file annoys you; splitting them per-domain across three directories on day one buys nothing.</p>
+<pre>web/
+  vite.config.ts        proxy: { '/api': 'http://localhost:4000' }
+  src/
+    main.tsx            MantineProvider + QueryClientProvider + RouterProvider
+    routes.tsx          route table, RequireAuth, Shell
+    api.ts              fetch wrapper, token helpers, currentUserId()
+    api.test.ts         the one check: error unwrapping + 401 clears the token
+    types.ts            User, Post
+    hooks.ts            useFeed, useUser, useUserPosts, useFollow, usePostMutations
+    pages/
+      Login.tsx  Register.tsx  Feed.tsx  Profile.tsx  Settings.tsx
+    components/
+      Shell.tsx         AppShell, header search, avatar menu
+      PostCard.tsx      title, body, author link, owner-only edit/delete
+      PostForm.tsx      modal body, shared by create and edit
+      UserSearch.tsx    Mantine Autocomplete → navigate(`/users/${id}`)</pre>
+    <p style="font-size:.88rem;color:var(--muted)">Sixteen files. If a component starts needing its own folder, that is the signal to split — not before.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">07</span>Build order</h2>
+    <p>Each phase ends with something you can click. The phases are genuinely sequential — phase 3 renders data the API does not return yet, so the backend fixes have to land in between.</p>
+
+    <div>
+      <div class="phase">
+        <div class="n">1</div>
+        <div class="body">
+          <strong>Scaffold and get logged in</strong>
+          <p>Vite + TS, Mantine provider, QueryClient, router. Write <code>api.ts</code> and <code>vite.config.ts</code> proxy. Build <code>/login</code>, <code>/register</code>, <code>RequireAuth</code>, <code>Shell</code>.</p>
+          <span class="ship">Ship: log in, land on an empty feed, reload without being kicked out.</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="n">2</div>
+        <div class="body">
+          <strong>Feed and composing</strong>
+          <p><code>GET /feed</code> into <code>PostCard</code>, the <code>PostForm</code> modal wired to <code>POST /post</code>, invalidate the feed query on success. Empty state that says to go follow someone — the feed excludes your own posts, so a new account sees nothing and that needs explaining on screen.</p>
+          <span class="ship">Ship: post something, see a followed user's posts.</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="n">·</div>
+        <div class="body">
+          <strong>Backend interlude</strong>
+          <p>The four fixes from section 05. Roughly an hour: one join across four queries, one endpoint extension, one migration, one word.</p>
+          <span class="ship">Ship: cards can show a name; a profile can answer "am I following you".</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="n">3</div>
+        <div class="body">
+          <strong>Profiles, ownership and following</strong>
+          <p><code>/users/:id</code> with header, counts, that user's posts. Follow/unfollow with an optimistic toggle rolled back on error. Owner-only edit and delete on <code>PostCard</code>, reusing <code>PostForm</code>. Header autocomplete for finding people.</p>
+          <span class="ship">Ship: every requirement except password change.</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="n">4</div>
+        <div class="body">
+          <strong>Settings</strong>
+          <p>Profile form — remember <code>PUT /users/{id}</code> validates name, nickname <em>and</em> email, so always send all three. Password card posting <code>{currentPassword, newPassword}</code>, with the API's message surfaced verbatim in a notification when the current password is wrong.</p>
+          <span class="ship">Ship: feature-complete against your list.</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="n">5</div>
+        <div class="body">
+          <strong>The unglamorous pass</strong>
+          <p>Loading skeletons, empty states, the 401 path exercised by hand, form-level error display, the 50-character title counter and whatever the description limit ended up being.</p>
+          <span class="ship">Ship: it stops feeling like a prototype.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">08</span>Deliberately not built</h2>
+    <ul>
+      <li><strong>Likes, comments, avatars, images</strong> — no tables, no columns, no storage. Adding them is a backend project, not a UI one.</li>
+      <li><strong>Infinite scroll and pagination</strong> — no endpoint takes a limit or offset. Add it when a feed actually gets long enough to hurt.</li>
+      <li><strong>A state manager</strong> — TanStack Query owns server data and the token is one string. There is nothing left for Redux to hold.</li>
+      <li><strong>SSR / Next.js</strong> — an authenticated dashboard behind a login has no SEO to gain and no first-paint problem worth a framework.</li>
+      <li><strong>Refresh tokens and silent renewal</strong> — six hours, then log in again. Real work in the backend for a study project's convenience.</li>
+      <li><strong>A test suite</strong> — one Vitest file over <code>api.ts</code>, because error unwrapping and the 401 path are the only logic in the app that is not "render what the server said". Component tests can wait for a component that earns one.</li>
+      <li><strong>Delete-account UI</strong> — the endpoint exists; you did not ask for the screen.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Written against <code>main</code> @ 6eb395e · api/src reviewed in full · no frontend code exists yet
+  </footer>
+
+</div>
