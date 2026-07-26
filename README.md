@@ -63,7 +63,6 @@ A small social network, created as a study project: a **Go** REST API backed by 
 │       ├── routes.tsx    # route table and the auth guard
 │       ├── pages/        # login, register, feed, profile, settings
 │       └── components/   # shell, post card, post form, user search
-├── plans/                # design notes
 └── bruno/                # Bruno API collection for documentation/testing
 ```
 
