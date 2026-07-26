@@ -17,6 +17,10 @@ type User struct {
 	Password  string     `json:"password,omitempty"`
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+
+	FollowersCount int  `json:"followersCount"`
+	FollowingCount int  `json:"followingCount"`
+	IsFollowing    bool `json:"isFollowing"`
 }
 
 func (user *User) Prepare(isUpdating bool) error {

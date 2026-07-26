@@ -5,7 +5,6 @@ import (
 	"api/src/responses"
 	"api/src/utils/auth"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -124,7 +123,6 @@ func (controller PostController) UpdatePost(w http.ResponseWriter, r *http.Reque
 	}
 
 	if userId != existingPost.AuthorId {
-		fmt.Println(userId, existingPost.AuthorId)
 		responses.Error(w, apierrors.Forbidden("Can't edit a post that isn't yours"))
 		return
 	}

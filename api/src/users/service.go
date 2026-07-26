@@ -36,8 +36,8 @@ func (service UserService) Get(name string) ([]User, error) {
 	return users, nil
 }
 
-func (service UserService) GetById(id string) (*User, error) {
-	user, err := service.repo.GetById(id)
+func (service UserService) GetById(id, viewerId string) (*User, error) {
+	user, err := service.repo.GetById(id, viewerId)
 	if err != nil {
 		return nil, err
 	}
