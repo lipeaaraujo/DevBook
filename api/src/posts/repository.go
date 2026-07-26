@@ -33,8 +33,6 @@ func (repo PostRepo) Create(post Post) (string, error) {
 	return insertedId, nil
 }
 
-// Every read returns the author's name and nickname, so clients don't have to
-// resolve author_id into a person themselves.
 const selectPost = `select p.id, p.title, p.description, p.author_id, u.name, u.nickname, p.created_at, p.updated_at
 	from posts p inner join users u on u.id = p.author_id`
 

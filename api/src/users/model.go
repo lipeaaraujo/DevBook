@@ -18,8 +18,6 @@ type User struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 
-	// Relationship data for the profile screen, only filled by GetById.
-	// No omitempty: "0 followers" is a fact, not a missing value.
 	FollowersCount int  `json:"followersCount"`
 	FollowingCount int  `json:"followingCount"`
 	IsFollowing    bool `json:"isFollowing"`

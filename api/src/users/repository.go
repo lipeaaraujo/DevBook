@@ -88,8 +88,6 @@ func (repo UserRepository) Get(nameQuery string) ([]User, error) {
 	return users, nil
 }
 
-// GetById returns the user plus the relationship data the profile screen needs.
-// viewerId is whoever is asking, so isFollowing can be answered in the same trip.
 func (repo UserRepository) GetById(userId, viewerId string) (User, error) {
 	rows, err := repo.db.Query(
 		`select u.id, u.name, u.nickname, u.email, u.created_at, u.updated_at,
