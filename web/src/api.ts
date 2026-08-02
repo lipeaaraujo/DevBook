@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'devbook_token'
+const API_URL = import.meta.env.VITE_API_URL
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY)
 export const setToken = (token: string) => localStorage.setItem(TOKEN_KEY, token)
@@ -30,7 +31,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getToken()
   if (token) headers.set('Authorization', `Bearer ${token}`)
   if (init.body) headers.set('Content-Type', 'application/json')
-  const res = await fetch(`/api${path}`, { ...init, headers })
+  const res = await fetch(`${API_URL}${path}`, { ...init, headers })
   if (!res.ok) {
     const checksCredentials = path === '/login' || path.endsWith('/change-password')
     if (res.status === 401 && !checksCredentials) {
