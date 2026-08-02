@@ -20,7 +20,7 @@ func Load() {
 	var err error
 
 	if err = godotenv.Load(); err != nil {
-		log.Fatal(err)
+		log.Println("no .env file found, using environment variables")
 	}
 
 	Port, err = strconv.Atoi(os.Getenv("PORT"))
