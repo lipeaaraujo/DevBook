@@ -13,6 +13,7 @@ var (
 	DbConnectionString = ""
 	Port               = 0
 	JwtTokenSecret     = ""
+	FrontendURL        = ""
 )
 
 func Load() {
@@ -37,4 +38,5 @@ func Load() {
 	)
 
 	JwtTokenSecret = os.Getenv("JWT_TOKEN_SECRET")
+	FrontendURL = os.Getenv("FRONTEND_URL")
 }
