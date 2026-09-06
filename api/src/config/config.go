@@ -11,6 +11,7 @@ import (
 
 var (
 	DbConnectionString = ""
+	DbConnectionUrl    = ""
 	Port               = 0
 	JwtTokenSecret     = ""
 	FrontendURL        = ""
@@ -20,7 +21,7 @@ func Load() {
 	var err error
 
 	if err = godotenv.Load(); err != nil {
-		log.Fatal(err)
+		log.Println("no .env file found, using environment variables.")
 	}
 
 	Port, err = strconv.Atoi(os.Getenv("PORT"))
@@ -34,6 +35,15 @@ func Load() {
 		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
+	)
+
+	DbConnectionUrl = fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_DB"),
 	)
 
