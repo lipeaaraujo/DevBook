@@ -19,6 +19,7 @@ FROM debian:bookworm-slim
 WORKDIR /root/
 
 COPY --from=builder --chmod=755 /app/main .
+COPY --from=builder /app/migrations ./migrations
 RUN chmod +x main
 
 EXPOSE 4000

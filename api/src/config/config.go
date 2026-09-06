@@ -11,7 +11,7 @@ import (
 
 var (
 	DbConnectionString = ""
-	DbConnectionUrl = ""
+	DbConnectionUrl    = ""
 	Port               = 0
 	JwtTokenSecret     = ""
 	FrontendURL        = ""
