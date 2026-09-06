@@ -140,7 +140,7 @@ func (controller PostController) UpdatePost(w http.ResponseWriter, r *http.Reque
 	}
 	post.Id = postId
 
-	if err := controller.service.UpdatePost(&post); err != nil {
+	if err := controller.service.UpdatePost(post); err != nil {
 		responses.Error(w, err)
 		return
 	}

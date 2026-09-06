@@ -9,19 +9,6 @@ import (
 	"time"
 )
 
-type UserRepoInterface interface {
-	Create(user *User) (string, error)
-	Get(nameQuery string) ([]User, error)
-	GetById(userId, viewerId string) (User, error)
-	GetByEmail(email string) (User, error)
-	Update(userId string, user *User) error
-	Delete(userId string) error
-	Follow(userId, followId string) error
-	Unfollow(userId, unfollowId string) error
-	GetPwd(userId string) (string, error)
-	UpdatePwd(userId, newPwd string) error
-}
-
 type UserRepository struct {
 	db *sql.DB
 }
@@ -68,6 +55,10 @@ func (repo UserRepository) Get(nameQuery string) ([]User, error) {
 	var users []User
 	for rows.Next() {
 		var user User
+
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
 
 		err := rows.Scan(
 			&user.ID,

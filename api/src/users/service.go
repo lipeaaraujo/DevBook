@@ -6,6 +6,19 @@ import (
 	"net/http"
 )
 
+type UserRepoInterface interface {
+	Create(user *User) (string, error)
+	Get(nameQuery string) ([]User, error)
+	GetById(userId, viewerId string) (User, error)
+	GetByEmail(email string) (User, error)
+	Update(userId string, user *User) error
+	Delete(userId string) error
+	Follow(userId, followId string) error
+	Unfollow(userId, unfollowId string) error
+	GetPwd(userId string) (string, error)
+	UpdatePwd(userId, newPwd string) error
+}
+
 type UserService struct {
 	repo UserRepoInterface
 }

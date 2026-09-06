@@ -2,11 +2,21 @@ package posts
 
 import "api/src/apierrors"
 
-type PostService struct {
-	repo *PostRepo
+type PostRepoInterface interface {
+	Create(post Post) (string, error)
+	Get(title string) ([]Post, error)
+	GetById(id string) (Post, error)
+	GetByAuthor(authorId string, title string) ([]Post, error)
+	GetFromFollowers(userId string) ([]Post, error)
+	Update(post Post) error
+	Delete(id string) error
 }
 
-func NewPostService(repo *PostRepo) *PostService {
+type PostService struct {
+	repo PostRepoInterface
+}
+
+func NewPostService(repo PostRepoInterface) *PostService {
 	return &PostService{repo: repo}
 }
 
@@ -71,7 +81,7 @@ func (service PostService) GetByFollowers(userId string) ([]Post, error) {
 	return posts, nil
 }
 
-func (service PostService) UpdatePost(post *Post) error {
+func (service PostService) UpdatePost(post Post) error {
 	if err := post.PrepareUpdate(); err != nil {
 		return err
 	}

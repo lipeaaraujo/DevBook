@@ -124,7 +124,7 @@ func (repo PostRepo) GetFromFollowers(userId string) ([]Post, error) {
 	return scanPosts(rows)
 }
 
-func (repo PostRepo) Update(post *Post) error {
+func (repo PostRepo) Update(post Post) error {
 	statement, err := repo.db.Prepare(
 		`update posts set title = $1, description = $2, updated_at = $3 where id = $4`,
 	)
