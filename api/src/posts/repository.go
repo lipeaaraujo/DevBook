@@ -1,7 +1,6 @@
 package posts
 
 import (
-	"api/src/apierrors"
 	"database/sql"
 	"fmt"
 	"time"
@@ -69,7 +68,7 @@ func (repo PostRepo) GetById(id string) (Post, error) {
 	defer rows.Close()
 
 	if !rows.Next() {
-		return Post{}, apierrors.NotFound("Post")
+		return Post{}, ErrPostNotFound
 	}
 
 	var post Post

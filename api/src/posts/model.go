@@ -1,7 +1,6 @@
 package posts
 
 import (
-	"api/src/apierrors"
 	"time"
 )
 
@@ -18,15 +17,15 @@ type Post struct {
 
 func (post *Post) PrepareCreate() error {
 	if post.Title == "" || post.Description == "" || post.AuthorId == "" {
-		return apierrors.BadRequest("Post title, description or authorId can't be empty")
+		return ErrPostTitleDescriptionAuthorIDEmpty
 	}
 
 	if len(post.Title) > 50 {
-		return apierrors.BadRequest("Post title can't be bigger than 50 characters")
+		return ErrPostTitleTooLong
 	}
 
 	if len(post.Description) > 2000 {
-		return apierrors.BadRequest("Post description can't be bigger than 2000 characters")
+		return ErrPostDescriptionTooLong
 	}
 
 	return nil
@@ -34,15 +33,15 @@ func (post *Post) PrepareCreate() error {
 
 func (post *Post) PrepareUpdate() error {
 	if post.Title == "" || post.Description == "" {
-		return apierrors.BadRequest("Post title or description can't be empty")
+		return ErrPostTitleDescriptionEmpty
 	}
 
 	if len(post.Title) > 50 {
-		return apierrors.BadRequest("Post title can't be bigger than 50 characters")
+		return ErrPostTitleTooLong
 	}
 
 	if len(post.Description) > 2000 {
-		return apierrors.BadRequest("Post description can't be bigger than 2000 characters")
+		return ErrPostDescriptionTooLong
 	}
 
 	return nil

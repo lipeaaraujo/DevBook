@@ -5,6 +5,7 @@ import (
 	"api/src/responses"
 	"api/src/utils/auth"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -18,6 +19,24 @@ type PostController struct {
 
 func NewPostController(service *PostService) *PostController {
 	return &PostController{service: service}
+}
+
+func postErrorResponse(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, ErrPostTitleDescriptionAuthorIDEmpty),
+		errors.Is(err, ErrPostTitleTooLong),
+		errors.Is(err, ErrPostDescriptionTooLong),
+		errors.Is(err, ErrPostTitleDescriptionEmpty),
+		errors.Is(err, ErrPostIDRequired),
+		errors.Is(err, ErrAuthorIDRequired),
+		errors.Is(err, ErrInvalidUserID),
+		errors.Is(err, ErrPostIDRequiredForDelete):
+		responses.Error(w, apierrors.BadRequest(err.Error()))
+	case errors.Is(err, ErrPostNotFound):
+		responses.Error(w, apierrors.NotFound("Post"))
+	default:
+		responses.Error(w, err)
+	}
 }
 
 func (controller PostController) CreatePost(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +61,7 @@ func (controller PostController) CreatePost(w http.ResponseWriter, r *http.Reque
 
 	createdId, err := controller.service.CreatePost(post)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -56,7 +75,7 @@ func (controller PostController) GetPosts(w http.ResponseWriter, r *http.Request
 
 	posts, err := controller.service.GetPosts(titleQuery)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -69,7 +88,7 @@ func (controller PostController) GetPostById(w http.ResponseWriter, r *http.Requ
 
 	post, err := controller.service.GetById(postId)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -83,7 +102,7 @@ func (controller PostController) GetByAuthor(w http.ResponseWriter, r *http.Requ
 
 	posts, err := controller.service.GetByAuthor(authorId, title)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -99,7 +118,7 @@ func (controller PostController) GetFromFollowers(w http.ResponseWriter, r *http
 
 	posts, err := controller.service.GetByFollowers(userId)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -118,7 +137,7 @@ func (controller PostController) UpdatePost(w http.ResponseWriter, r *http.Reque
 
 	existingPost, err := controller.service.GetById(postId)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -141,7 +160,7 @@ func (controller PostController) UpdatePost(w http.ResponseWriter, r *http.Reque
 	post.Id = postId
 
 	if err := controller.service.UpdatePost(post); err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -160,7 +179,7 @@ func (controller PostController) DeletePost(w http.ResponseWriter, r *http.Reque
 
 	existingPost, err := controller.service.GetById(postId)
 	if err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
@@ -170,7 +189,7 @@ func (controller PostController) DeletePost(w http.ResponseWriter, r *http.Reque
 	}
 
 	if err := controller.service.DeletePost(postId); err != nil {
-		responses.Error(w, err)
+		postErrorResponse(w, err)
 		return
 	}
 
