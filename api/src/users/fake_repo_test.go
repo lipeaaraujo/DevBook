@@ -25,9 +25,6 @@ func (r *FakeUserRepo) Get(name string) ([]User, error) {
 	users := []User{}
 
 	for _, user := range r.saved {
-		if name == "" {
-			users = append(users, user)
-		}
 		if strings.Contains(user.Name, name) {
 			users = append(users, user)
 		}
@@ -41,7 +38,13 @@ func (r *FakeUserRepo) GetById(userId string, viewerId string) (User, error) {
 }
 
 func (r *FakeUserRepo) GetByEmail(email string) (User, error) {
-	panic("unimplemented")
+	for _, u := range r.saved {
+		if u.Email == email {
+			return u, nil
+		}
+	}
+
+	return User{}, nil
 }
 
 // Delete implements [UserRepoInterface].

@@ -35,23 +35,23 @@ func (user *User) Prepare(isUpdating bool) error {
 
 func (user *User) validate(isUpdating bool) error {
 	if user.Name == "" {
-		return apierrors.ValidationError("User name can't be null or empty")
+		return ErrNameEmpty
 	}
 
 	if user.Nickname == "" {
-		return apierrors.ValidationError("User nickname can't be null or empty")
+		return ErrNicknameEmpty
 	}
 
 	if user.Email == "" {
-		return apierrors.ValidationError("User email can't be null or empty")
+		return ErrEmailEmpty
 	}
 
 	if err := checkmail.ValidateFormat(user.Email); err != nil {
-		return apierrors.ValidationError("Invalid email format")
+		return ErrInvalidEmailFormat
 	}
 
 	if !isUpdating && user.Password == "" {
-		return apierrors.ValidationError("User password can't be null or empty")
+		return ErrPasswordEmpty
 	}
 
 	return nil

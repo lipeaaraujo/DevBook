@@ -5,6 +5,7 @@ import (
 	"api/src/responses"
 	"api/src/utils/auth"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -23,6 +24,23 @@ func NewUserController(s *UserService) *UserController {
 type changePasswordRequest struct {
 	CurrentPwd string `json:"currentPassword"`
 	NewPwd     string `json:"newPassword"`
+}
+
+func userErrorResponse(w http.ResponseWriter, err error) {
+	switch {
+	case errors.Is(err, ErrEmailEmpty),
+		errors.Is(err, ErrInvalidEmailFormat),
+		errors.Is(err, ErrNicknameEmpty),
+		errors.Is(err, ErrPasswordEmpty),
+		errors.Is(err, ErrNameEmpty):
+		responses.Error(w, apierrors.ValidationError(err.Error()))
+
+	case errors.Is(err, ErrUserWithEmailExists):
+		responses.Error(w, apierrors.ResourceAlreadyExists("User with that email"))
+
+	default:
+		responses.Error(w, err)
+	}
 }
 
 func (controller UserController) CreateUser(

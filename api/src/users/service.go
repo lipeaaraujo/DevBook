@@ -32,6 +32,11 @@ func (service UserService) Create(user *User) (error, *User) {
 		return err, nil
 	}
 
+	existingUser, err := service.repo.GetByEmail(user.Email)
+	if existingUser.ID != "" {
+		return ErrUserWithEmailExists, nil
+	}
+
 	userId, err := service.repo.Create(user)
 	if err != nil {
 		return err, nil
