@@ -1,17 +1,20 @@
 package login
 
 import (
-	"api/src/apierrors"
 	"api/src/users"
 	"api/src/utils"
 	"api/src/utils/auth"
 )
 
-type LoginService struct {
-	userRepo users.UserRepoInterface
+type UserLookup interface {
+	GetByEmail(email string) (users.User, error)
 }
 
-func NewLoginService(userRepo users.UserRepoInterface) *LoginService {
+type LoginService struct {
+	userRepo UserLookup
+}
+
+func NewLoginService(userRepo UserLookup) *LoginService {
 	return &LoginService{userRepo: userRepo}
 }
 
@@ -27,7 +30,7 @@ func (service LoginService) Login(user *users.User) (string, error) {
 
 	err = utils.VerifyHash(user.Password, existingUser.Password)
 	if err != nil {
-		return "", apierrors.Unauthorized("Invalid credentials")
+		return "", users.ErrInvalidCredentials
 	}
 
 	token, err := auth.CreateToken(existingUser.ID)

@@ -38,6 +38,8 @@ func (controller LoginController) Login(w http.ResponseWriter, r *http.Request) 
 			errors.Is(err, users.ErrInvalidEmailFormat),
 			errors.Is(err, users.ErrPasswordEmpty):
 			responses.Error(w, apierrors.ValidationError(err.Error()))
+		case errors.Is(err, users.ErrInvalidCredentials):
+			responses.Error(w, apierrors.Unauthorized(err.Error()))
 		default:
 			responses.Error(w, err)
 		}
