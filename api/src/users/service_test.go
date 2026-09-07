@@ -95,6 +95,30 @@ func TestService_Create(t *testing.T) {
 		})
 	}
 
+	t.Run("returns repository errors", func(t *testing.T) {
+		validUser := User{Name: "User", Nickname: "user", Email: "user@test.com", Password: "password"}
+
+		for _, tt := range []struct {
+			name string
+			repo *FakeUserRepo
+		}{
+			{name: "get by email", repo: &FakeUserRepo{getByEmailErr: errors.New("lookup failed")}},
+			{name: "create", repo: &FakeUserRepo{createErr: errors.New("insert failed")}},
+		} {
+			t.Run(tt.name, func(t *testing.T) {
+				user := validUser
+				err, created := NewUserService(tt.repo).Create(&user)
+
+				if !errors.Is(err, tt.repo.getByEmailErr) && !errors.Is(err, tt.repo.createErr) {
+					t.Fatalf("expected repository error, got: %v", err)
+				}
+				if created != nil {
+					t.Fatalf("expected no created user, got: %+v", created)
+				}
+			})
+		}
+	})
+
 	t.Run("doesn't save two users with the same email", func(t *testing.T) {
 		repo := newFakeRepo()
 		service := NewUserService(repo)
@@ -214,30 +238,6 @@ func TestService_Get(t *testing.T) {
 			t.Fatalf("expected err: %v, got: %v", wantErr, err)
 		}
 	})
-}
-
-func TestService_CreateRepositoryErrors(t *testing.T) {
-	validUser := User{Name: "User", Nickname: "user", Email: "user@test.com", Password: "password"}
-
-	for _, tt := range []struct {
-		name string
-		repo *FakeUserRepo
-	}{
-		{name: "get by email", repo: &FakeUserRepo{getByEmailErr: errors.New("lookup failed")}},
-		{name: "create", repo: &FakeUserRepo{createErr: errors.New("insert failed")}},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			user := validUser
-			err, created := NewUserService(tt.repo).Create(&user)
-
-			if !errors.Is(err, tt.repo.getByEmailErr) && !errors.Is(err, tt.repo.createErr) {
-				t.Fatalf("expected repository error, got: %v", err)
-			}
-			if created != nil {
-				t.Fatalf("expected no created user, got: %+v", created)
-			}
-		})
-	}
 }
 
 func TestService_GetByID(t *testing.T) {
