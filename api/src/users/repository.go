@@ -1,26 +1,11 @@
 package users
 
 import (
-	"api/src/apierrors"
 	"database/sql"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 )
-
-type UserRepoInterface interface {
-	Create(user *User) (string, error)
-	Get(nameQuery string) ([]User, error)
-	GetById(userId, viewerId string) (User, error)
-	GetByEmail(email string) (User, error)
-	Update(userId string, user *User) error
-	Delete(userId string) error
-	Follow(userId, followId string) error
-	Unfollow(userId, unfollowId string) error
-	GetPwd(userId string) (string, error)
-	UpdatePwd(userId, newPwd string) error
-}
 
 type UserRepository struct {
 	db *sql.DB
@@ -43,7 +28,7 @@ func (repo UserRepository) Create(user *User) (string, error) {
 	err = statement.QueryRow(user.Name, user.Nickname, user.Email, user.Password).Scan(&insertedId)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
-			err = apierrors.ResourceAlreadyExists("User with that email")
+			err = ErrUserWithEmailExists
 		}
 		return "", err
 	}
@@ -68,6 +53,10 @@ func (repo UserRepository) Get(nameQuery string) ([]User, error) {
 	var users []User
 	for rows.Next() {
 		var user User
+
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
 
 		err := rows.Scan(
 			&user.ID,
@@ -197,7 +186,7 @@ func (repo UserRepository) Follow(userId, followId string) error {
 
 	if _, err := statement.Exec(userId, followId); err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
-			err = apierrors.New(http.StatusBadRequest, "Already following user.", nil)
+			err = ErrAlreadyFollowingUser
 			return err
 		}
 		return err
@@ -234,7 +223,7 @@ func (repo UserRepository) GetPwd(userId string) (string, error) {
 
 	var password string
 	if !rows.Next() {
-		return "", apierrors.NotFound("User")
+		return "", ErrUserNotFound
 	}
 
 	if err := rows.Scan(&password); err != nil {

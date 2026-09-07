@@ -1,12 +1,20 @@
 package posts
 
-import "api/src/apierrors"
-
-type PostService struct {
-	repo *PostRepo
+type PostRepoInterface interface {
+	Create(post Post) (string, error)
+	Get(title string) ([]Post, error)
+	GetById(id string) (Post, error)
+	GetByAuthor(authorId string, title string) ([]Post, error)
+	GetFromFollowers(userId string) ([]Post, error)
+	Update(post Post) error
+	Delete(id string) error
 }
 
-func NewPostService(repo *PostRepo) *PostService {
+type PostService struct {
+	repo PostRepoInterface
+}
+
+func NewPostService(repo PostRepoInterface) *PostService {
 	return &PostService{repo: repo}
 }
 
@@ -34,7 +42,7 @@ func (service PostService) GetPosts(title string) ([]Post, error) {
 
 func (service PostService) GetById(postId string) (Post, error) {
 	if postId == "" {
-		return Post{}, apierrors.BadRequest("You need to pass the postId")
+		return Post{}, ErrPostIDRequired
 	}
 
 	post, err := service.repo.GetById(postId)
@@ -47,7 +55,7 @@ func (service PostService) GetById(postId string) (Post, error) {
 
 func (service PostService) GetByAuthor(authorId string, title string) ([]Post, error) {
 	if authorId == "" {
-		return nil, apierrors.BadRequest("You need to pass the authorId")
+		return nil, ErrAuthorIDRequired
 	}
 
 	posts, err := service.repo.GetByAuthor(authorId, title)
@@ -60,7 +68,7 @@ func (service PostService) GetByAuthor(authorId string, title string) ([]Post, e
 
 func (service PostService) GetByFollowers(userId string) ([]Post, error) {
 	if userId == "" {
-		return nil, apierrors.BadRequest("Invalid userId")
+		return nil, ErrInvalidUserID
 	}
 
 	posts, err := service.repo.GetFromFollowers(userId)
@@ -71,7 +79,7 @@ func (service PostService) GetByFollowers(userId string) ([]Post, error) {
 	return posts, nil
 }
 
-func (service PostService) UpdatePost(post *Post) error {
+func (service PostService) UpdatePost(post Post) error {
 	if err := post.PrepareUpdate(); err != nil {
 		return err
 	}
@@ -85,7 +93,7 @@ func (service PostService) UpdatePost(post *Post) error {
 
 func (service PostService) DeletePost(postId string) error {
 	if postId == "" {
-		return apierrors.BadRequest("You have to pass the postId")
+		return ErrPostIDRequiredForDelete
 	}
 
 	if err := service.repo.Delete(postId); err != nil {

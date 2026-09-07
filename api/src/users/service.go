@@ -1,10 +1,19 @@
 package users
 
-import (
-	"api/src/apierrors"
-	"api/src/utils"
-	"net/http"
-)
+import "api/src/utils"
+
+type UserRepoInterface interface {
+	Create(user *User) (string, error)
+	Get(nameQuery string) ([]User, error)
+	GetById(userId, viewerId string) (User, error)
+	GetByEmail(email string) (User, error)
+	Update(userId string, user *User) error
+	Delete(userId string) error
+	Follow(userId, followId string) error
+	Unfollow(userId, unfollowId string) error
+	GetPwd(userId string) (string, error)
+	UpdatePwd(userId, newPwd string) error
+}
 
 type UserService struct {
 	repo UserRepoInterface
@@ -17,6 +26,15 @@ func NewUserService(repo UserRepoInterface) *UserService {
 func (service UserService) Create(user *User) (error, *User) {
 	if err := user.Prepare(false); err != nil {
 		return err, nil
+	}
+
+	existingUser, err := service.repo.GetByEmail(user.Email)
+	if err != nil {
+		return err, nil
+	}
+
+	if existingUser.ID != "" {
+		return ErrUserWithEmailExists, nil
 	}
 
 	userId, err := service.repo.Create(user)
@@ -43,7 +61,7 @@ func (service UserService) GetById(id, viewerId string) (*User, error) {
 	}
 
 	if user == (User{}) {
-		return nil, apierrors.NotFound("User")
+		return nil, ErrUserNotFound
 	}
 
 	return &user, err
@@ -70,7 +88,7 @@ func (service UserService) Delete(id string) error {
 
 func (service UserService) Follow(userId, followId string) error {
 	if userId == followId {
-		return apierrors.New(http.StatusForbidden, "You can't follow your own user.", nil)
+		return ErrCannotFollowSelf
 	}
 
 	if err := service.repo.Follow(userId, followId); err != nil {
@@ -82,7 +100,7 @@ func (service UserService) Follow(userId, followId string) error {
 
 func (service UserService) Unfollow(userId, followId string) error {
 	if userId == followId {
-		return apierrors.New(http.StatusForbidden, "You can't unfollow your own user.", nil)
+		return ErrCannotUnfollowSelf
 	}
 
 	if err := service.repo.Unfollow(userId, followId); err != nil {
@@ -101,7 +119,7 @@ func (service UserService) ChangePassword(userId, currentPwd, newPwd string) err
 
 	err = utils.VerifyHash(currentPwd, userPwd)
 	if err != nil {
-		return apierrors.Unauthorized("Invalid credentials")
+		return ErrInvalidCredentials
 	}
 
 	// hash newPwd

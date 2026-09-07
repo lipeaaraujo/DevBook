@@ -1,7 +1,6 @@
 package posts
 
 import (
-	"api/src/apierrors"
 	"database/sql"
 	"fmt"
 	"time"
@@ -69,7 +68,7 @@ func (repo PostRepo) GetById(id string) (Post, error) {
 	defer rows.Close()
 
 	if !rows.Next() {
-		return Post{}, apierrors.NotFound("Post")
+		return Post{}, ErrPostNotFound
 	}
 
 	var post Post
@@ -124,7 +123,7 @@ func (repo PostRepo) GetFromFollowers(userId string) ([]Post, error) {
 	return scanPosts(rows)
 }
 
-func (repo PostRepo) Update(post *Post) error {
+func (repo PostRepo) Update(post Post) error {
 	statement, err := repo.db.Prepare(
 		`update posts set title = $1, description = $2, updated_at = $3 where id = $4`,
 	)
