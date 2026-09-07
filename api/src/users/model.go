@@ -1,7 +1,6 @@
 package users
 
 import (
-	"api/src/apierrors"
 	"api/src/utils"
 	"strings"
 	"time"
@@ -61,15 +60,15 @@ func (user *User) PrepareLogin() error {
 	user.Email = strings.TrimSpace(user.Email)
 
 	if user.Email == "" {
-		return apierrors.ValidationError("User email is required")
+		return ErrEmailEmpty
 	}
 
 	if err := checkmail.ValidateFormat(user.Email); err != nil {
-		return apierrors.ValidationError("Invalid email format")
+		return ErrInvalidEmailFormat
 	}
 
 	if user.Password == "" {
-		return apierrors.ValidationError("User password is required")
+		return ErrPasswordEmpty
 	}
 
 	return nil
@@ -83,7 +82,7 @@ func (user *User) format(isUpdating bool) error {
 	if !isUpdating && user.Password != "" {
 		hashPassword, err := utils.Hash(user.Password)
 		if err != nil {
-			return apierrors.Internal(err)
+			return err
 		}
 
 		user.Password = string(hashPassword)

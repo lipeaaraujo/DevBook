@@ -38,6 +38,18 @@ func userErrorResponse(w http.ResponseWriter, err error) {
 	case errors.Is(err, ErrUserWithEmailExists):
 		responses.Error(w, apierrors.ResourceAlreadyExists("User with that email"))
 
+	case errors.Is(err, ErrUserNotFound):
+		responses.Error(w, apierrors.NotFound("User"))
+
+	case errors.Is(err, ErrCannotFollowSelf), errors.Is(err, ErrCannotUnfollowSelf):
+		responses.Error(w, apierrors.Forbidden(err.Error()))
+
+	case errors.Is(err, ErrAlreadyFollowingUser):
+		responses.Error(w, apierrors.BadRequest(err.Error()))
+
+	case errors.Is(err, ErrInvalidCredentials):
+		responses.Error(w, apierrors.Unauthorized(err.Error()))
+
 	default:
 		responses.Error(w, err)
 	}
@@ -61,7 +73,7 @@ func (controller UserController) CreateUser(
 
 	err, createdUser := controller.service.Create(&user)
 	if err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -77,7 +89,7 @@ func (controller UserController) GetUsers(
 
 	users, err := controller.service.Get(nameQuery)
 	if err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -99,7 +111,7 @@ func (controller UserController) GetUser(
 
 	user, err := controller.service.GetById(userId, viewerId)
 	if err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -137,7 +149,7 @@ func (controller UserController) UpdateUser(
 	}
 
 	if err := controller.service.Update(userId, &user); err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -163,7 +175,7 @@ func (controller UserController) DeleteUser(
 	}
 
 	if err := controller.service.Delete(userId); err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -184,7 +196,7 @@ func (controller UserController) FollowUser(
 	}
 
 	if err = controller.service.Follow(authenticatedUserId, userToFollowId); err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -205,7 +217,7 @@ func (controller UserController) UnfollowUser(
 	}
 
 	if err := controller.service.Unfollow(authUserId, unfollowId); err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 
@@ -247,7 +259,7 @@ func (controller UserController) ChangePassword(
 		fields.CurrentPwd,
 		fields.NewPwd,
 	); err != nil {
-		responses.Error(w, err)
+		userErrorResponse(w, err)
 		return
 	}
 

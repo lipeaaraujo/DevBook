@@ -1,10 +1,8 @@
 package users
 
 import (
-	"api/src/apierrors"
 	"database/sql"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -30,7 +28,7 @@ func (repo UserRepository) Create(user *User) (string, error) {
 	err = statement.QueryRow(user.Name, user.Nickname, user.Email, user.Password).Scan(&insertedId)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
-			err = apierrors.ResourceAlreadyExists("User with that email")
+			err = ErrUserWithEmailExists
 		}
 		return "", err
 	}
@@ -188,7 +186,7 @@ func (repo UserRepository) Follow(userId, followId string) error {
 
 	if _, err := statement.Exec(userId, followId); err != nil {
 		if strings.Contains(err.Error(), "duplicate key") {
-			err = apierrors.New(http.StatusBadRequest, "Already following user.", nil)
+			err = ErrAlreadyFollowingUser
 			return err
 		}
 		return err
@@ -225,7 +223,7 @@ func (repo UserRepository) GetPwd(userId string) (string, error) {
 
 	var password string
 	if !rows.Next() {
-		return "", apierrors.NotFound("User")
+		return "", ErrUserNotFound
 	}
 
 	if err := rows.Scan(&password); err != nil {

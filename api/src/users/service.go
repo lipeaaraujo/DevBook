@@ -1,10 +1,6 @@
 package users
 
-import (
-	"api/src/apierrors"
-	"api/src/utils"
-	"net/http"
-)
+import "api/src/utils"
 
 type UserRepoInterface interface {
 	Create(user *User) (string, error)
@@ -33,6 +29,10 @@ func (service UserService) Create(user *User) (error, *User) {
 	}
 
 	existingUser, err := service.repo.GetByEmail(user.Email)
+	if err != nil {
+		return err, nil
+	}
+
 	if existingUser.ID != "" {
 		return ErrUserWithEmailExists, nil
 	}
@@ -61,7 +61,7 @@ func (service UserService) GetById(id, viewerId string) (*User, error) {
 	}
 
 	if user == (User{}) {
-		return nil, apierrors.NotFound("User")
+		return nil, ErrUserNotFound
 	}
 
 	return &user, err
@@ -88,7 +88,7 @@ func (service UserService) Delete(id string) error {
 
 func (service UserService) Follow(userId, followId string) error {
 	if userId == followId {
-		return apierrors.New(http.StatusForbidden, "You can't follow your own user.", nil)
+		return ErrCannotFollowSelf
 	}
 
 	if err := service.repo.Follow(userId, followId); err != nil {
@@ -100,7 +100,7 @@ func (service UserService) Follow(userId, followId string) error {
 
 func (service UserService) Unfollow(userId, followId string) error {
 	if userId == followId {
-		return apierrors.New(http.StatusForbidden, "You can't unfollow your own user.", nil)
+		return ErrCannotUnfollowSelf
 	}
 
 	if err := service.repo.Unfollow(userId, followId); err != nil {
@@ -119,7 +119,7 @@ func (service UserService) ChangePassword(userId, currentPwd, newPwd string) err
 
 	err = utils.VerifyHash(currentPwd, userPwd)
 	if err != nil {
-		return apierrors.Unauthorized("Invalid credentials")
+		return ErrInvalidCredentials
 	}
 
 	// hash newPwd

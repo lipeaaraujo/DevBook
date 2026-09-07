@@ -5,6 +5,7 @@ import (
 	"api/src/responses"
 	"api/src/users"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 )
@@ -32,7 +33,14 @@ func (controller LoginController) Login(w http.ResponseWriter, r *http.Request) 
 
 	token, err := controller.service.Login(&user)
 	if err != nil {
-		responses.Error(w, err)
+		switch {
+		case errors.Is(err, users.ErrEmailEmpty),
+			errors.Is(err, users.ErrInvalidEmailFormat),
+			errors.Is(err, users.ErrPasswordEmpty):
+			responses.Error(w, apierrors.ValidationError(err.Error()))
+		default:
+			responses.Error(w, err)
+		}
 		return
 	}
 
