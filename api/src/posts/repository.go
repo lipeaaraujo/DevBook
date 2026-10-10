@@ -110,8 +110,8 @@ func (repo PostRepo) GetByAuthor(authorId string, title string) ([]Post, error) 
 
 func (repo PostRepo) GetFromFollowers(userId string) ([]Post, error) {
 	rows, err := repo.db.Query(
-		selectPost+` inner join followers f on f.user_id = p.author_id
-		 where f.follower_id = $1
+		selectPost+` where p.author_id = $1
+			or p.author_id in (select user_id from followers where follower_id = $1)
 		 order by p.created_at desc`,
 		userId,
 	)
