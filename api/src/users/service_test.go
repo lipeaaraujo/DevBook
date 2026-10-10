@@ -254,6 +254,32 @@ func TestService_GetByID(t *testing.T) {
 		}
 	})
 
+	t.Run("hides email from other users", func(t *testing.T) {
+		repo := newFakeRepo()
+		repo.saved["user-id"] = User{ID: "user-id", Email: "user@test.com"}
+
+		user, err := NewUserService(repo).GetById("user-id", "viewer-id")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if user.Email != "" {
+			t.Fatalf("expected email to be hidden, got %s", user.Email)
+		}
+	})
+
+	t.Run("shows email to the user themselves", func(t *testing.T) {
+		repo := newFakeRepo()
+		repo.saved["user-id"] = User{ID: "user-id", Email: "user@test.com"}
+
+		user, err := NewUserService(repo).GetById("user-id", "user-id")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if user.Email != "user@test.com" {
+			t.Fatalf("expected email user@test.com, got %s", user.Email)
+		}
+	})
+
 	t.Run("returns not found when repository returns no user", func(t *testing.T) {
 		user, err := NewUserService(newFakeRepo()).GetById("missing", "viewer-id")
 		if !errors.Is(err, ErrUserNotFound) {

@@ -66,6 +66,10 @@ func (service UserService) GetById(id, viewerId string) (*User, error) {
 		return nil, ErrUserNotFound
 	}
 
+	if id != viewerId {
+		user.Email = ""
+	}
+
 	return &user, err
 }
 
