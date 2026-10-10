@@ -118,6 +118,25 @@ func (controller UserController) GetUser(
 	responses.JSON(w, http.StatusOK, user)
 }
 
+func (controller UserController) GetMe(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	userId, err := auth.ExtractUserId(r)
+	if err != nil {
+		responses.Error(w, err)
+		return
+	}
+
+	user, err := controller.service.GetById(userId, userId)
+	if err != nil {
+		userErrorResponse(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, user)
+}
+
 func (controller UserController) UpdateUser(
 	w http.ResponseWriter,
 	r *http.Request,

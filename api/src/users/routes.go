@@ -26,6 +26,12 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			RequiresAuth: true,
 		},
 		{
+			URI:          "/me",
+			Method:       http.MethodGet,
+			Handler:      userController.GetMe,
+			RequiresAuth: true,
+		},
+		{
 			URI:          "/users/{userId}",
 			Method:       http.MethodPut,
 			Handler:      userController.UpdateUser,
