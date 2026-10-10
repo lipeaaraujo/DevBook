@@ -20,7 +20,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (user?.id) {
-      profileForm.setValues({ name: user.name, nickname: user.nickname, email: user.email })
+      profileForm.setValues({ name: user.name, nickname: user.nickname, email: user.email ?? '' })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])

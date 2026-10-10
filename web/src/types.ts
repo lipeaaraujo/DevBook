@@ -2,7 +2,7 @@ export type User = {
   id: string
   name: string
   nickname: string
-  email: string
+  email?: string // only returned for the current user
   createdAt: string
   updatedAt?: string
   followersCount: number
