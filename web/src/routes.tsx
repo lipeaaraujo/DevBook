@@ -1,14 +1,15 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import { hasValidSession } from './api'
+import { hasSession } from './api'
 import Shell from './components/Shell'
 import Feed from './pages/Feed'
+import Follows from './pages/Follows'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
 import Settings from './pages/Settings'
 
 function RequireAuth() {
-  return hasValidSession() ? <Shell /> : <Navigate to="/login" replace />
+  return hasSession() ? <Shell /> : <Navigate to="/login" replace />
 }
 
 export const router = createBrowserRouter([
@@ -19,6 +20,8 @@ export const router = createBrowserRouter([
     children: [
       { path: '/', element: <Feed /> },
       { path: '/users/:id', element: <Profile /> },
+      { path: '/users/:id/followers', element: <Follows kind="followers" /> },
+      { path: '/users/:id/following', element: <Follows kind="following" /> },
       { path: '/settings', element: <Settings /> },
     ],
   },

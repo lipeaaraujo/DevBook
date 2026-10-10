@@ -5,26 +5,8 @@ export const getToken = () => localStorage.getItem(TOKEN_KEY)
 export const setToken = (token: string) => localStorage.setItem(TOKEN_KEY, token)
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY)
 
-export function decodeToken(token: string): { userId: string; exp: number } | null {
-  try {
-    const { userId, exp } = JSON.parse(atob(token.split('.')[1]))
-    if (userId == null || typeof exp !== 'number') return null
-    return { userId: String(userId), exp }
-  } catch {
-    return null
-  }
-}
-
-export function currentUserId(): string | null {
-  const token = getToken()
-  return token ? (decodeToken(token)?.userId ?? null) : null
-}
-
-export function hasValidSession(): boolean {
-  const token = getToken()
-  const claims = token ? decodeToken(token) : null
-  return claims !== null && claims.exp * 1000 > Date.now()
-}
+// The token is opaque: an expired one is caught by the 401 handler in api().
+export const hasSession = () => getToken() !== null
 
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers)

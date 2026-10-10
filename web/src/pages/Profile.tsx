@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   Alert,
+  Anchor,
   Avatar,
   Button,
   Card,
@@ -12,14 +13,14 @@ import {
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { Link, useParams } from 'react-router-dom'
-import { currentUserId } from '../api'
 import PostCard from '../components/PostCard'
 import PostForm from '../components/PostForm'
-import { useFollow, useUnfollow, useUser, useUserPosts } from '../hooks'
+import { useFollow, useMe, useUnfollow, useUser, useUserPosts } from '../hooks'
 
 export default function Profile() {
   const { id = '' } = useParams()
-  const isMe = id === currentUserId()
+  const { data: me } = useMe()
+  const isMe = id === me?.id
   const { data: user, isPending, error } = useUser(id)
   const posts = useUserPosts(id)
   const follow = useFollow(id)
@@ -52,18 +53,18 @@ export default function Profile() {
               })}
             </Text>
             <Group gap="md">
-              <Text size="sm">
+              <Anchor component={Link} to={`/users/${id}/followers`} size="sm" c="inherit">
                 <Text component="span" fw={600}>
                   {user.followersCount}
                 </Text>{' '}
                 followers
-              </Text>
-              <Text size="sm">
+              </Anchor>
+              <Anchor component={Link} to={`/users/${id}/following`} size="sm" c="inherit">
                 <Text component="span" fw={600}>
                   {user.followingCount}
                 </Text>{' '}
                 following
-              </Text>
+              </Anchor>
             </Group>
             {isMe && (
               <Group gap="xs" mt={4}>

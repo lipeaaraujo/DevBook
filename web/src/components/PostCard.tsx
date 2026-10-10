@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { ActionIcon, Anchor, Card, Group, Menu, Text } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { Link } from 'react-router-dom'
-import { currentUserId } from '../api'
-import { useDeletePost } from '../hooks'
+import { useDeletePost, useMe } from '../hooks'
 import type { Post } from '../types'
 import PostForm from './PostForm'
 
@@ -25,7 +24,8 @@ function relativeTime(iso: string) {
 }
 
 export default function PostCard({ post }: { post: Post }) {
-  const isOwn = post.authorId === currentUserId()
+  const { data: me } = useMe()
+  const isOwn = post.authorId === me?.id
   const [editing, setEditing] = useState(false)
   const deletePost = useDeletePost()
 

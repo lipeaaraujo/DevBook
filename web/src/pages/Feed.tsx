@@ -33,7 +33,7 @@ export default function Feed() {
       ) : data.length === 0 ? (
         <EmptyState
           title="Your feed is empty"
-          description="The feed shows posts from people you follow — your own posts never appear here. Use the search bar in the header to find someone and follow them from their profile."
+          description="Write your first post, or use the search bar in the header to find people to follow."
         />
       ) : (
         data.map((post) => <PostCard key={post.id} post={post} />)

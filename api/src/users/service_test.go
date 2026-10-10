@@ -254,6 +254,32 @@ func TestService_GetByID(t *testing.T) {
 		}
 	})
 
+	t.Run("hides email from other users", func(t *testing.T) {
+		repo := newFakeRepo()
+		repo.saved["user-id"] = User{ID: "user-id", Email: "user@test.com"}
+
+		user, err := NewUserService(repo).GetById("user-id", "viewer-id")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if user.Email != "" {
+			t.Fatalf("expected email to be hidden, got %s", user.Email)
+		}
+	})
+
+	t.Run("shows email to the user themselves", func(t *testing.T) {
+		repo := newFakeRepo()
+		repo.saved["user-id"] = User{ID: "user-id", Email: "user@test.com"}
+
+		user, err := NewUserService(repo).GetById("user-id", "user-id")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if user.Email != "user@test.com" {
+			t.Fatalf("expected email user@test.com, got %s", user.Email)
+		}
+	})
+
 	t.Run("returns not found when repository returns no user", func(t *testing.T) {
 		user, err := NewUserService(newFakeRepo()).GetById("missing", "viewer-id")
 		if !errors.Is(err, ErrUserNotFound) {
@@ -393,6 +419,36 @@ func TestService_Unfollow(t *testing.T) {
 			t.Fatalf("expected err: %v, got: %v", wantErr, err)
 		}
 	})
+}
+
+func TestService_FollowLists(t *testing.T) {
+	users := []User{{ID: "a"}, {ID: "b"}}
+	repoErr := errors.New("lookup failed")
+	followers := func(s *UserService) ([]User, error) { return s.GetFollowers("user-id") }
+	following := func(s *UserService) ([]User, error) { return s.GetFollowing("user-id") }
+
+	for _, tt := range []struct {
+		name    string
+		list    func(*UserService) ([]User, error)
+		repo    *FakeUserRepo
+		wantLen int
+		wantErr error
+	}{
+		{name: "followers", list: followers, repo: &FakeUserRepo{followers: users}, wantLen: 2},
+		{name: "following", list: following, repo: &FakeUserRepo{following: users}, wantLen: 2},
+		{name: "followers error", list: followers, repo: &FakeUserRepo{followersErr: repoErr}, wantErr: repoErr},
+		{name: "following error", list: following, repo: &FakeUserRepo{followingErr: repoErr}, wantErr: repoErr},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.list(NewUserService(tt.repo))
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("expected err: %v, got: %v", tt.wantErr, err)
+			}
+			if len(got) != tt.wantLen {
+				t.Fatalf("expected %d users, got %d", tt.wantLen, len(got))
+			}
+		})
+	}
 }
 
 func TestService_ChangePassword(t *testing.T) {

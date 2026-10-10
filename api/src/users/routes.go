@@ -26,6 +26,12 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			RequiresAuth: true,
 		},
 		{
+			URI:          "/me",
+			Method:       http.MethodGet,
+			Handler:      userController.GetMe,
+			RequiresAuth: true,
+		},
+		{
 			URI:          "/users/{userId}",
 			Method:       http.MethodPut,
 			Handler:      userController.UpdateUser,
@@ -47,6 +53,18 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			URI:          "/users/{userId}/unfollow",
 			Method:       http.MethodPost,
 			Handler:      userController.UnfollowUser,
+			RequiresAuth: true,
+		},
+		{
+			URI:          "/users/{userId}/followers",
+			Method:       http.MethodGet,
+			Handler:      userController.GetFollowers,
+			RequiresAuth: true,
+		},
+		{
+			URI:          "/users/{userId}/following",
+			Method:       http.MethodGet,
+			Handler:      userController.GetFollowing,
 			RequiresAuth: true,
 		},
 		{
