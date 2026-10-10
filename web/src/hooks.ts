@@ -61,6 +61,7 @@ function useInvalidateOwnPosts() {
   const qc = useQueryClient()
   const { data: me } = useMe()
   return () => {
+    qc.invalidateQueries({ queryKey: queryKeys.feed })
     if (me) qc.invalidateQueries({ queryKey: queryKeys.userPosts(me.id) })
   }
 }
