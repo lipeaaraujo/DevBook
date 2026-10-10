@@ -395,6 +395,36 @@ func TestService_Unfollow(t *testing.T) {
 	})
 }
 
+func TestService_FollowLists(t *testing.T) {
+	users := []User{{ID: "a"}, {ID: "b"}}
+	repoErr := errors.New("lookup failed")
+	followers := func(s *UserService) ([]User, error) { return s.GetFollowers("user-id") }
+	following := func(s *UserService) ([]User, error) { return s.GetFollowing("user-id") }
+
+	for _, tt := range []struct {
+		name    string
+		list    func(*UserService) ([]User, error)
+		repo    *FakeUserRepo
+		wantLen int
+		wantErr error
+	}{
+		{name: "followers", list: followers, repo: &FakeUserRepo{followers: users}, wantLen: 2},
+		{name: "following", list: following, repo: &FakeUserRepo{following: users}, wantLen: 2},
+		{name: "followers error", list: followers, repo: &FakeUserRepo{followersErr: repoErr}, wantErr: repoErr},
+		{name: "following error", list: following, repo: &FakeUserRepo{followingErr: repoErr}, wantErr: repoErr},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.list(NewUserService(tt.repo))
+			if !errors.Is(err, tt.wantErr) {
+				t.Fatalf("expected err: %v, got: %v", tt.wantErr, err)
+			}
+			if len(got) != tt.wantLen {
+				t.Fatalf("expected %d users, got %d", tt.wantLen, len(got))
+			}
+		})
+	}
+}
+
 func TestService_ChangePassword(t *testing.T) {
 	t.Run("updates password", func(t *testing.T) {
 		hash, err := utils.Hash("current-password")

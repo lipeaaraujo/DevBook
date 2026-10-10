@@ -17,6 +17,8 @@ type FakeUserRepo struct {
 	deleteErr      error
 	followErr      error
 	unfollowErr    error
+	followersErr   error
+	followingErr   error
 	getPwdErr      error
 	updatePwdErr   error
 	updatedUser    User
@@ -24,6 +26,8 @@ type FakeUserRepo struct {
 	deletedUserID  string
 	followedUserID string
 	unfollowedID   string
+	followers      []User
+	following      []User
 }
 
 func newFakeRepo() *FakeUserRepo {
@@ -116,6 +120,14 @@ func (r *FakeUserRepo) Unfollow(userId string, unfollowId string) error {
 
 	r.unfollowedID = unfollowId
 	return nil
+}
+
+func (r *FakeUserRepo) GetFollowers(userId string) ([]User, error) {
+	return r.followers, r.followersErr
+}
+
+func (r *FakeUserRepo) GetFollowing(userId string) ([]User, error) {
+	return r.following, r.followingErr
 }
 
 func (r *FakeUserRepo) GetPwd(userId string) (string, error) {

@@ -211,6 +211,43 @@ func (repo UserRepository) Unfollow(userId, unfollowId string) error {
 	return nil
 }
 
+func (repo UserRepository) GetFollowers(userId string) ([]User, error) {
+	return repo.listUsers(
+		`select u.id, u.name, u.nickname from users u
+		 inner join followers f on f.follower_id = u.id
+		 where f.user_id = $1 order by u.name`,
+		userId,
+	)
+}
+
+func (repo UserRepository) GetFollowing(userId string) ([]User, error) {
+	return repo.listUsers(
+		`select u.id, u.name, u.nickname from users u
+		 inner join followers f on f.user_id = u.id
+		 where f.follower_id = $1 order by u.name`,
+		userId,
+	)
+}
+
+func (repo UserRepository) listUsers(query string, args ...any) ([]User, error) {
+	rows, err := repo.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []User{}
+	for rows.Next() {
+		var user User
+		if err := rows.Scan(&user.ID, &user.Name, &user.Nickname); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, rows.Err()
+}
+
 func (repo UserRepository) GetPwd(userId string) (string, error) {
 	rows, err := repo.db.Query(
 		"select password from users where id = $1",

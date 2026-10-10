@@ -56,6 +56,18 @@ func CreateUserRoutes(userController *UserController) []routes.Route {
 			RequiresAuth: true,
 		},
 		{
+			URI:          "/users/{userId}/followers",
+			Method:       http.MethodGet,
+			Handler:      userController.GetFollowers,
+			RequiresAuth: true,
+		},
+		{
+			URI:          "/users/{userId}/following",
+			Method:       http.MethodGet,
+			Handler:      userController.GetFollowing,
+			RequiresAuth: true,
+		},
+		{
 			URI:          "/users/{userId}/change-password",
 			Method:       http.MethodPost,
 			Handler:      userController.ChangePassword,

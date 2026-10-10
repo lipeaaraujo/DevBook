@@ -11,6 +11,8 @@ type UserRepoInterface interface {
 	Delete(userId string) error
 	Follow(userId, followId string) error
 	Unfollow(userId, unfollowId string) error
+	GetFollowers(userId string) ([]User, error)
+	GetFollowing(userId string) ([]User, error)
 	GetPwd(userId string) (string, error)
 	UpdatePwd(userId, newPwd string) error
 }
@@ -108,6 +110,14 @@ func (service UserService) Unfollow(userId, followId string) error {
 	}
 
 	return nil
+}
+
+func (service UserService) GetFollowers(userId string) ([]User, error) {
+	return service.repo.GetFollowers(userId)
+}
+
+func (service UserService) GetFollowing(userId string) ([]User, error) {
+	return service.repo.GetFollowing(userId)
 }
 
 func (service UserService) ChangePassword(userId, currentPwd, newPwd string) error {

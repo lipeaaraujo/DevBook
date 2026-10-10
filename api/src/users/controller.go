@@ -243,6 +243,32 @@ func (controller UserController) UnfollowUser(
 	responses.JSON(w, http.StatusNoContent, nil)
 }
 
+func (controller UserController) GetFollowers(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	users, err := controller.service.GetFollowers(mux.Vars(r)["userId"])
+	if err != nil {
+		userErrorResponse(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, users)
+}
+
+func (controller UserController) GetFollowing(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	users, err := controller.service.GetFollowing(mux.Vars(r)["userId"])
+	if err != nil {
+		userErrorResponse(w, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, users)
+}
+
 func (controller UserController) ChangePassword(
 	w http.ResponseWriter,
 	r *http.Request,
