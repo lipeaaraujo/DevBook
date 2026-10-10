@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   Alert,
+  Anchor,
   Avatar,
   Button,
   Card,
@@ -52,18 +53,18 @@ export default function Profile() {
               })}
             </Text>
             <Group gap="md">
-              <Text size="sm">
+              <Anchor component={Link} to={`/users/${id}/followers`} size="sm" c="inherit">
                 <Text component="span" fw={600}>
                   {user.followersCount}
                 </Text>{' '}
                 followers
-              </Text>
-              <Text size="sm">
+              </Anchor>
+              <Anchor component={Link} to={`/users/${id}/following`} size="sm" c="inherit">
                 <Text component="span" fw={600}>
                   {user.followingCount}
                 </Text>{' '}
                 following
-              </Text>
+              </Anchor>
             </Group>
             {isMe && (
               <Group gap="xs" mt={4}>

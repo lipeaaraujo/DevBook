@@ -2,11 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from './api'
 import type { Post, User } from './types'
 
+type FollowKind = 'followers' | 'following'
+
 export const queryKeys = {
   me: ['me'] as const,
   feed: ['feed'] as const,
   user: (id: string) => ['user', id] as const,
   userPosts: (id: string) => ['userPosts', id] as const,
+  follows: ['follows'] as const,
+  followList: (id: string, kind: FollowKind) => ['follows', id, kind] as const,
   searchUsers: (query: string) => ['searchUsers', query] as const,
 }
 
@@ -20,6 +24,9 @@ export const useUser = (id: string) =>
 
 export const useUserPosts = (id: string) =>
   useQuery({ queryKey: queryKeys.userPosts(id), queryFn: () => api<Post[]>(`/user/${id}/post`) })
+
+export const useFollowList = (id: string, kind: FollowKind) =>
+  useQuery({ queryKey: queryKeys.followList(id, kind), queryFn: () => api<User[]>(`/users/${id}/${kind}`) })
 
 export const useSearchUsers = (query: string) =>
   useQuery({
@@ -50,6 +57,7 @@ function useFollowAction(userId: string, action: 'follow' | 'unfollow') {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: queryKeys.user(userId) })
       qc.invalidateQueries({ queryKey: queryKeys.feed })
+      qc.invalidateQueries({ queryKey: queryKeys.follows })
     },
   })
 }
