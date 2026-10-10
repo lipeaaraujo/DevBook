@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { Autocomplete } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
-import { currentUserId } from '../api'
-import { useSearchUsers } from '../hooks'
+import { useMe, useSearchUsers } from '../hooks'
 
 const label = (u: { name: string; nickname: string }) => `${u.name} @${u.nickname}`
 
@@ -12,7 +11,8 @@ export default function UserSearch() {
   const [value, setValue] = useState('')
   const [debounced] = useDebouncedValue(value, 250)
   const { data } = useSearchUsers(debounced)
-  const users = (data ?? []).filter((u) => u.id !== currentUserId())
+  const { data: me } = useMe()
+  const users = (data ?? []).filter((u) => u.id !== me?.id)
 
   return (
     <Autocomplete

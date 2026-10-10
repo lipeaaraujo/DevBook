@@ -12,14 +12,14 @@ import {
 } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { Link, useParams } from 'react-router-dom'
-import { currentUserId } from '../api'
 import PostCard from '../components/PostCard'
 import PostForm from '../components/PostForm'
-import { useFollow, useUnfollow, useUser, useUserPosts } from '../hooks'
+import { useFollow, useMe, useUnfollow, useUser, useUserPosts } from '../hooks'
 
 export default function Profile() {
   const { id = '' } = useParams()
-  const isMe = id === currentUserId()
+  const { data: me } = useMe()
+  const isMe = id === me?.id
   const { data: user, isPending, error } = useUser(id)
   const posts = useUserPosts(id)
   const follow = useFollow(id)

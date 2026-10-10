@@ -1,13 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, currentUserId } from './api'
+import { api } from './api'
 import type { Post, User } from './types'
 
 export const queryKeys = {
+  me: ['me'] as const,
   feed: ['feed'] as const,
   user: (id: string) => ['user', id] as const,
   userPosts: (id: string) => ['userPosts', id] as const,
   searchUsers: (query: string) => ['searchUsers', query] as const,
 }
+
+export const useMe = () => useQuery({ queryKey: queryKeys.me, queryFn: () => api<User>('/me') })
 
 export const useFeed = () =>
   useQuery({ queryKey: queryKeys.feed, queryFn: () => api<Post[]>('/feed') })
@@ -56,9 +59,9 @@ export const useUnfollow = (userId: string) => useFollowAction(userId, 'unfollow
 
 function useInvalidateOwnPosts() {
   const qc = useQueryClient()
+  const { data: me } = useMe()
   return () => {
-    const id = currentUserId()
-    if (id) qc.invalidateQueries({ queryKey: queryKeys.userPosts(id) })
+    if (me) qc.invalidateQueries({ queryKey: queryKeys.userPosts(me.id) })
   }
 }
 
@@ -90,22 +93,24 @@ export function useDeletePost() {
 
 export function useUpdateProfile() {
   const qc = useQueryClient()
+  const { data: me } = useMe()
   return useMutation({
     mutationFn: (body: { name: string; nickname: string; email: string }) =>
-      api<void>(`/users/${currentUserId()}`, { method: 'PUT', body: JSON.stringify(body) }),
+      api<void>(`/users/${me?.id}`, { method: 'PUT', body: JSON.stringify(body) }),
     onSuccess: () => {
-      const id = currentUserId()
-      if (id) {
-        qc.invalidateQueries({ queryKey: queryKeys.user(id) })
-        qc.invalidateQueries({ queryKey: queryKeys.userPosts(id) })
+      qc.invalidateQueries({ queryKey: queryKeys.me })
+      if (me) {
+        qc.invalidateQueries({ queryKey: queryKeys.user(me.id) })
+        qc.invalidateQueries({ queryKey: queryKeys.userPosts(me.id) })
       }
     },
   })
 }
 
 export function useChangePassword() {
+  const { data: me } = useMe()
   return useMutation({
     mutationFn: (body: { currentPassword: string; newPassword: string }) =>
-      api<void>(`/users/${currentUserId()}/change-password`, { method: 'POST', body: JSON.stringify(body) }),
+      api<void>(`/users/${me?.id}/change-password`, { method: 'POST', body: JSON.stringify(body) }),
   })
 }

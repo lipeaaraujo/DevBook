@@ -2,11 +2,10 @@ import { useEffect } from 'react'
 import { Button, Card, PasswordInput, Stack, TextInput, Title } from '@mantine/core'
 import { isEmail, isNotEmpty, matchesField, useForm } from '@mantine/form'
 import { notifications } from '@mantine/notifications'
-import { currentUserId } from '../api'
-import { useChangePassword, useUpdateProfile, useUser } from '../hooks'
+import { useChangePassword, useMe, useUpdateProfile } from '../hooks'
 
 export default function Settings() {
-  const { data: user } = useUser(currentUserId() ?? '')
+  const { data: user } = useMe()
   const updateProfile = useUpdateProfile()
   const changePassword = useChangePassword()
 
